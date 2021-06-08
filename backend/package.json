@@ -1,0 +1,16 @@
+{
+  "dependencies": {
+    "-": "^0.0.1",
+    "bcrypt": "^5.0.1",
+    "body-parser": "^1.19.0",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "g": "^2.0.1",
+    "jsonwebtoken": "^8.5.1",
+    "maskdata": "^1.1.4",
+    "multer": "^1.4.2",
+    "mysql": "^2.18.1",
+    "nodemon": "^2.0.7",
+    "password-validator": "^5.1.1"
+  }
+}
