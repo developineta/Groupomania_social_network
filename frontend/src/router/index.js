@@ -2,8 +2,8 @@ import Vue from "vue";
 import VueRouter from "vue-router";
 import Home from "../views/Home.vue";
 //import App from "../App.vue";
-/*import Signup from "../views/Signup.vue"
-import OnePost from "../views/OnePost.vue"
+import Signup from "../views/Signup.vue";
+/*import OnePost from "../views/OnePost.vue"
 import AllPosts from "../views/AllPosts.vue"
 import NewPost from "../views/NewPost.vue"
 import UserProfile from "../views/UserProfile.vue"*/
@@ -18,22 +18,22 @@ const routes = [
     component: App
     },*/
   {
-    path: '/',
+    path: '/user/login',
     name: 'Home',
     component: Home
   },
-  /*{
-    path: '/signup',
+  {
+    path: '/user/signup',
     name: 'Signup',
     component: Signup
   },
-  {
-    path: '/publication/:id',
+  /*{
+    path: '/post/:id',
     name: 'OnePost',
     component: OnePost
   },
   {
-    path: '/publication',
+    path: '/post',
     name: 'AllPosts',
     component: AllPosts
   },
@@ -43,7 +43,7 @@ const routes = [
     component: NewPost
   },
   {
-    path: '/user/profile',
+    path: '/user/:id',
     name: 'UserProfile',
     component: UserProfile
   },*/

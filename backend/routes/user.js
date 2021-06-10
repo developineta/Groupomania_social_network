@@ -11,7 +11,7 @@ const passwordModification = require('../middleware/password-modify');
 // Les routes de user disponibles
 router.post("/signup", passwordValidation, userCtrl.signup);
 router.post("/login", userCtrl.login);
-router.get("/:id/getoneuser", auth, userCtrl.getOneUser);
+router.get("/:id", auth, userCtrl.getOneUser);
 router.delete("/delete", auth, userCtrl.delete);
 router.put("/modify", auth, passwordModification, multer, userCtrl.modify);
 

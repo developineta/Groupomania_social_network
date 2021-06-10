@@ -1,22 +1,19 @@
 <template>
   <div class="home">
     <Header />
-    <Login v-if="!loginSuccess" />
-    <AllPosts v-if="loginSuccess" />
+    <Login />
   </div>
 </template>
 
 <script>
 import Header from "../components/Header.vue";
 import Login from "../components/Login.vue";
-import AllPosts from "../components/AllPosts.vue";
 
 export default {
   name: "Home",
   components: {
     Header,
     Login,
-    AllPosts,
   },
   data() {
     return{

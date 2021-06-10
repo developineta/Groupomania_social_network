@@ -9,23 +9,45 @@ const maskData = require('maskdata');   // Importer le paquet pour le masquage d
 exports.signup = (req, res, next) => {
 
     bcrypt.hash(req.body.password, 10)  // La fonction pour 'hasher' le mot de passe
-        .then(hash => {
-            const firstName = req.body.firstName;
-            const lastName = req.body.lastName;
-            const email = maskData.maskEmail2(req.body.email); // Masquage d'email
-            const password = hash;
+    .then(hash => {
+        const firstName = req.body.firstName;
+        const lastName = req.body.lastName;
+        const email = maskData.maskEmail2(req.body.email); // Masquage d'email
+        const password = hash;
 
-            let userSignup = "INSERT INTO user DATA (NULL, ?, ?, ?, NULL, imageUrl, ?, NOW())";
-            let data = [firstName, lastName, email, password];
-            mysql.query(userSignup, data, function (err, result) {
-                if (err) {
-                    return res.status(500).json(err.message);
-                }
+        let data = [firstName, lastName, email, password];
+        mysql.query("INSERT INTO user SET firstName=?, lastName=?, email=?, password=?", data, function (err, res) {
+            if (err) {
+                return res.status(400).json(err.message);
+            } else (res) =>{
                 res.status(201).json({ message: "Utilisateur est créé !" });
-            });
-        })
-        .catch(e => res.status(500).json(e));
+            }
+        });
+    })
+    .catch(e => res.status(500).json(e));
 };
+// Fonctionne
+/*function insertUser() {
+    bcrypt.hash("6passWord", 10)
+    .then(hash => {
+        let firstName = "Nikolai";
+        let lastName = "Volkov";
+        let email = maskData.maskEmail2("nikolai@mail.com");
+        let password = hash;
+        
+        let data = [firstName, lastName, email, password];
+        mysql.query("INSERT INTO user SET firstName=?, lastName=?, email=?, password=?", data, function (err, res) {
+            if (err) {
+                return res.status(400).json(err.message);
+            } else (res) =>{
+                res.status(201).json({ message: "Utilisateur est créé !" });
+            }
+        });
+    })
+    .catch(e => res.status(500).json(e));
+};
+
+insertUser();*/
 
 exports.login = (req, res, next) => {
     const email = maskData.maskEmail2(req.body.email);
@@ -123,7 +145,7 @@ exports.modify = (req, res, next) => {
                 return res.status(500).json(err.message);
             }
             setImage = "UPDATE user SET imageUrl=? WHERE userId=?";
-            if (filename !== "imageDefault.jpg") { // Si l'image existait et on la change
+            if (filename !== "imageDefault.png") { // Si l'image existait et on la change
                 fs.unlink(`images/${filename}`, () => { // On supprime l'ancien fichier d'image
                     mysql.query(setImage, [imageUrl, userId], function (err, result) {
                         if (err) {
@@ -183,4 +205,3 @@ exports.modify = (req, res, next) => {
         })
     } 
 };
-

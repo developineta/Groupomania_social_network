@@ -1,19 +1,30 @@
 <template>
-    <form class="border border-light p-5">
+    <div class="border border-light p-5">
         <p class="h4 mb-4 text-center">Connection</p>
-        <input type="email" id="defaultLoginFormEmail" class="form-control mb-4" placeholder="E-mail">
-        <input type="password" id="defaultLoginFormPassword" class="form-control mb-4" placeholder="Mot de passe">
-        <button class="btn btn-info btn-block my-4" type="submit">Se Connecter</button>
-        <div class="text-center">
-            <p>Vous n'avez pas encore de compte ?
-                <a href="">S'inscrire</a>
-            </p>
-        </div>
-    </form>
+        <form @submit.prevent = login()>
+            <div class="mb-2">Champs requis</div>
+            <input type="email" id="loginEmail" class="form-control mb-4" placeholder="E-mail" title="Renseignez votre e-mail" required>
+            <input type="password" id="loginPassword" class="form-control mb-4" placeholder="Mot de passe" title="Renseignez votre mot de passe" required>
+            <div class="error-msg">{{ message }}</div>
+            <button class="btn btn-primary btn-block btn-info my-4" type="submit">Se Connecter</button>
+            <div class="text-center">
+                <p>Vous n'avez pas encore de compte ?
+                    <router-link :to="{name:'Signup'}" id="signup" class="font-weight-bold mx-5" tag="button">S'inscrire</router-link>
+                </p>
+            </div>
+        </form>
+    </div>
 </template>
 
 <script>
-export default {
-  name: "Login",
-};
+    export default {
+        name: "Login",
+        data() {
+            return {
+                message: "",  //contiendra les messages d'erreur du backend ???
+            };
+        },
+        methods: {
+        }
+    }
 </script>
