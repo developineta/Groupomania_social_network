@@ -1,26 +1,37 @@
+require('dotenv').config();
 const mysql = require('../msqlConnect').connection;
-const fs = require("fs"); 
+const fs = require("fs");
+const jwt = require("jsonwebtoken");
+
+// Utilise le token pour récuperer les donnés d'utilisateur sur les routes de publications
+function decodeToken(req) {                                                    
+    let token = req.headers.authorization.split(' ')[1];              // Récupère uniquement le token du header de la requête
+    let decode = jwt.verify(token, process.env.RANDOM_TOKEN_SECRET);
+    decode = [decode.userId];
+    return decode;
+};
 
 exports.createPost = (req, res, next) => {
-    const userId = res.locals.userId;
-    const title = req.body.title;
-    const content = req.body.content;
+    let tokenData = decodeToken(req);
+    let authorId = tokenData[0];
+    console.log("Id utilisateur", authorId);
+    let title = req.body.title;
+    let content = req.body.content;
+    let newPost = "INSERT INTO post SET authorId=?, title=?, postImageUrl=?, content=?";
 
     if (req.file !== undefined) {    // Si le post contient l'image
-        let postImageUrl = `${req.protocol}://${req.get("host")}/images/${req.file.filename}`;                                                          
-        let newPost = "INSERT INTO post VALUES (NULL, ?, ?, ?, ?, NULL, NULL, NOW())";     
-        let data = [userId, title, postImageUrl, content];                                                   
+        let postImageUrl = `${req.protocol}://${req.get("host")}/images/${req.file.filename}`;
+        let data = [authorId, title, postImageUrl, content];                                                   
         mysql.query(newPost, data, function (err, result) {
             if (err) {
                 return res.status(500).json(err.message);
             }
-            res.status(201).json({ message: "L'article est crée !" });
+            res.status(201).json({ message: "L'article avec image est crée !" });
         });
     } else {                        // Si le post ne contient pas d'image        
         let postImageUrl = "";
-        let newPost = "INSERT INTO post VALUES (NULL, ?, ?, ?, ?, NULL, NULL, NOW())";     
-        let data = [userId, title, postImageUrl, content];                                                   
-        mysql.query(newPost, data, function (err, result) {
+        let data = [authorId, title, postImageUrl, content];                                                   
+        mysql.query(newPost, data, function (err, res) {
             if (err) {
                 return res.status(500).json(err.message);
             }
@@ -29,41 +40,53 @@ exports.createPost = (req, res, next) => {
     }
 };
 
+/*function insertPost(){
+    let authorId = "14";
+    let title = "Test post";
+    let content = "C'est le premier post qui est super interessant !";      
+    let postImageUrl = "";
+    let data = [authorId, title, postImageUrl, content];
+                                                      
+    mysql.query("INSERT INTO post SET authorId=?, title=?, postImageUrl=?, content=?", data, function (err, res) {
+        if (err) {
+            return res.status(400).json(err.message);
+        } else (res) =>{
+            res.status(201).json({ message: "Post créé !" });
+        }
+    });
+};
+insertPost();*/
+
 exports.deletePost = (req, res, next) => { 
-    const postId = req.params.postId;
-    const userId = res.locals.userId;
-    let data = [userId, postId];
-    const filename = result[0].postImageUrl.split("/images/")[1];
-    let deletePosted = "DELETE FROM post WHERE userId=? AND postId=?";
+    const postId = req.params.id;
 
     let selectPost = "SELECT postImageUrl FROM post WHERE postId=?";
-    mysql.query(selectPost, [postId], function (err, res) {
-        if (filename !== "") {
-            fs.unlink(`images/${filename}`, () => {
-                mysql.query(deletePosted, data, function (err, result) {
-                    if (err) {
-                        return res.status(500).json(err.message);
-                    }
-                    res.status(200).json({ message: "L'article est supprimé !" });
-                });
-            });
-        } else {
-            mysql.query(deletePosted, data, function (err, result) {
-                if (err) {
-                    return res.status(500).json(err.message);
-                }
-                res.status(200).json({ message: "L'article est supprimé !" });
-            });
-        }
+    mysql.query(selectPost, [postId], function (err, result) {
         if (err) {
             return res.status(500).json(err.message);
         }
+        const filename = result[0].postImageUrl.split("/images/")[1];
+        if (filename !== "") {                                          // Si l'image existe
+            fs.unlink(`images/${filename}`, (e) => { // Supprime le fichier d'image
+                if(err) {
+                    console.log(err);
+                }
+            });
+        }
+        let deletePost = "DELETE FROM post WHERE postId=?";
+        mysql.query(deletePost, [postId], function (err, result) {
+            if (err) {
+                return res.status(500).json(err.message);
+            }
+            res.status(200).json({ message: "L'article est supprimé !" });
+        });
     });
 };
 
 exports.getOnePost = (req, res, next) => {
-    const userId = res.locals.userId;
-    const postId = req.params.postId;
+    let tokenData = decodeToken(req);
+    let authorId = tokenData[0];
+    let postId = req.params.id;
 
     let getPost = `SELECT user.userId AS postAuthorId,
                     user.firstName AS postAuthorFirstName,
@@ -73,16 +96,13 @@ exports.getOnePost = (req, res, next) => {
                     post.title AS postTitle,
                     post.postImageUrl AS postImageUrl,
 
-                    (SELECT COUNT(if(reaction = 1, 2, NULL)) FROM reactions WHERE postId = postId) AS postLikeCount,
-                    (SELECT COUNT(if(reaction = 3, 2, NULL)) FROM reactions WHERE postId = postId) AS postDislikeCount,
-                    (SELECT COUNT(if(postId = postId, 1, NULL)) FROM commentaires WHERE postId = postId) AS postCommentCount,
-                    (SELECT reaction FROM reactions WHERE userId=? AND postId = reactions.postId) AS myReaction
-
                     FROM posts AS post
 
-                    JOIN users AS user ON post.userId = user.userId
-                    WHERE postId = ? GROUP BY postId;`;
-    mysql.query(getPost, [userId, postId], function (err, result) {
+                    JOIN users AS user ON post.userId = user.id
+                    WHERE post.id = ? GROUP BY post.id`;
+    let data = [authorId, postId];
+    let getPostById = mysql.format(getPost, data);
+    mysql.query(getPostById, data, function (err, result) {
         if (err) {
             return res.status(500).json(err.message);
         }
@@ -93,8 +113,9 @@ exports.getOnePost = (req, res, next) => {
     });
 };
 exports.getAllPosts = (req, res, next) => {
-    const userId = res.locals.userId;
-    const page = req.query.page;        // Récupère le No de la page
+    let tokenData = decodeToken(req);
+    let authorId = tokenData[0];
+    let page = req.query.page;          // Récupère le No de la page
     let offset = 10;                    // Offset par défaut 10
     offset = offset * (page - 1);       // Multiplication d'offset par le No de la page -1
 
@@ -106,87 +127,50 @@ exports.getAllPosts = (req, res, next) => {
                     post.title AS postTitle,
                     post.postImageUrl AS postImageUrl,
 
-                    (SELECT COUNT(if(reaction = 1, 2, NULL)) FROM reactions WHERE postId = post.id) AS postLikeCount,
-                    (SELECT COUNT(if(reaction = 3, 2, NULL)) FROM reactions WHERE postId = post.id) AS postDislikeCount,
-                    (SELECT COUNT(if(postId = post.id, 1, NULL)) FROM commentaires WHERE postId = post.id) AS postCommentCount,
-                    (SELECT reaction FROM reactions WHERE userId=? AND postId = reactions.Id) AS myReaction
-
                     FROM posts AS post
                     
-                    JOIN users AS user ON post.userId = user.userId
-                    GROUP BY post.postId ORDER BY postDate DESC
+                    JOIN users AS user ON post.userId = user.id
+                    GROUP BY post.id ORDER BY postDate DESC
                     LIMIT 10 OFFSET ?`;
-    let data = [userId, offset];
-    mysql.query(getPosts, data, function (err, result) {
+    let data = [authorId, offset];
+    getPosts = mysql.format(getPosts, data);
+    mysql.query(getPosts, function (err, result) {
         if (err) {
             return res.status(500).json(err.message);
         }
         if (result == 0) {
             return res.status(400).json({ message: "Le post n'existe pas !" });
+        } else {
+            getPosts = `SELECT COUNT(*) FROM posts;`;
         }
-        res.status(200).json(result);
     });
 };
 
-exports.postComment = (req, res, next) => {
-    const postId = req.params.postId;
-    const userId = res.locals.userId;
-    const body = req.body.body;
+exports.oneUserPosts = (req, res, next) => {
 
-    let postComment = "INSERT INTO post VALUES (NULL, ?, NULL, NULL, NULL, NULL, ?, ?, NOW())";
-    let data = [userId, postId, body];
-    mysql.query(postComment, data, function (err, result) {
-        if (err) {
-            return res.status(500).json(err.message);
+    let getUserPosts = `SELECT
+                       user.id AS postByUserId,
+                        user.firstName AS publicationCreateByUserNom,
+                        user.lastName AS publicationCreateByUserPrenom,
+                        post.postId AS postId,
+                        post.postDate AS postDate,
+                        post.title AS postTitle,
+                        post.postImageUrl AS postImageUrl,
+
+                        FROM posts AS post
+                        
+                        JOIN users AS user ON post.authorId = user.id
+                        WHERE user.id=?
+                        GROUP BY post.id ORDER BY postDate DESC`;
+
+    let data = [authorId, userId];
+    getUserPosts = mysql.format(getUserPosts, data);
+
+    mysql.query(getUserPosts, (error, posts) => {
+        if (error) {
+            res.status(400).json({ error: "Aucune publication trouvée !" });
+        } else {
+            res.status(200).json(posts);
         }
-        res.status(201).json({ message: "Le commentaire est crée !" });
     });
-};
-
-exports.likesDislikes = (req, res, next) => {
-    const userId = res.locals.userId;
-    const reaction = req.body.reaction;
-    const postId = req.params.postId;
-    let data;
-    try {
-        switch (reaction) {     // Selon la valeur de reaction
-            
-            case 1:             // Si ajoute like: reaction 1
-                let like = "UPDATE reactions SET reaction = 1 WHERE postId=? AND userId=?";
-                data = [postId, userId];
-
-                mysql.query(like, data, function (err, res) {
-                    if (err) {
-                        res.status(400).json({ err: "L'ajout de like a échoué !" });
-                    }
-                    res.status(201).json(res, { message: "Vous avez ajouté un like !" });
-                });
-                break;
-                
-            case 2:             // Si l'utilisateur enlève le like ou dislike: reaction 2
-                let neutre = "UPDATE reactions SET reaction = 2 WHERE postId=? AND userId=?";
-                data = [postId, userId];
-                mysql.query(neutre, data, function (err, res) {
-                    if (err) {
-                        res.status(400).json({ err: "L'annulation de reaction a échoué !" });
-                    }
-                    res.status(201).json(res, { message: "Vous avez enlevé la reaction !" });
-                });
-                break;
-            case 3:             // Si ajoute dislike
-            let dislike = "UPDATE reactions SET reaction = 3 WHERE postId=? AND userId=?";
-            data = [postId, userId];
-            mysql.query(dislike, data, function (err, res) {
-                if (err) {
-                    res.status(400).json({ err: "L'ajout de dislike a échoué !" });
-                }
-                res.status(201).json(res, { message: "Vous avez ajouté un dislike !" });
-            });
-            break;
-
-            default:
-                return res.status(500).json({ err });
-        }
-    } catch(err) { res.status(500).json({ err })
-    }
 };
