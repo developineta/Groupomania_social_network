@@ -1,12 +1,15 @@
 <template>
   <div class="home">
-    <Login v-if="!userLoggedIn"/>
-    <Header v-if="userLoggedIn"/>
-    <AllPosts v-if="userLoggedIn"/>
+    <Login />
+    <Header />
+    <AllPosts />
   </div>
 </template>
 
 <script>
+
+// v-if="!userLoggedIn" add to line 3
+// v-if="userLoggedIn" add to line 4, 5
 import Login from "../components/Login.vue";
 import Header from "../components/Header.vue";
 import AllPosts from "../components/AllPosts.vue";
@@ -18,7 +21,7 @@ export default {
     Header,
     AllPosts
   },
-  data() {
+  /*data() {
     return{
       loginSuccess: false     // False par défault et contiendra la validation si utilisateur sera authentifié
     };
@@ -38,6 +41,6 @@ export default {
         console.log("Vous êtes connecté !");
       }
     }
-  }
+  }*/
 }
 </script>

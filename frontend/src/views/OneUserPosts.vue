@@ -1,8 +1,8 @@
 <template>
   <div class="OneUserPosts">
-    <Header v-if="userLoggedIn"/>
+    <Header />
 
-    <div v-if="userLoggedIn" class="d-flex flex-column">
+    <div class="d-flex flex-column">
       <v-card class="mx-auto mt-5" elevation="24" width="600">
         <v-list-item two-line class="px-0 py-0">
             <v-list-item-content class="px-0 py-0">
@@ -29,13 +29,12 @@
         </v-list-item>
       </v-card>
     </div>
-
   </div>
 </template>
 
 <script>
-
-import Header from '@/components/Header.vue';
+// v-if="userLoggedIn" add to line 3, 5
+import Header from "../components/Header.vue";
 
 export default {
   name: 'OneUserPosts',
@@ -44,7 +43,7 @@ export default {
     Header,
   },
 
-  data() {
+  /*data() {
     return{
       userLoggedIn: false,
       posts: []
@@ -79,7 +78,7 @@ export default {
           this.posts = res.data;
       })
     },
-  }
+  }*/
 }
 </script>
 

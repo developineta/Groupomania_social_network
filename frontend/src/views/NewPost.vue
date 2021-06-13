@@ -1,5 +1,7 @@
 <template>
-  <div class="mb-4">
+  <div class="new-post">
+    <Header />
+
     <form name="newPost">
       <textarea name="title" class="form-control title-input" maxlength="60" placeholder="Le titre de votre publication" title="Saisissez le titre de la publication" required></textarea>
       <textarea name="content" class="form-control content-input" maxlength="2000" placeholder="Le contenu de votre publication" title="Saisissez le contenu de la publication" required></textarea>
@@ -13,7 +15,13 @@
 </template>
 
 <script>
-    export default {
-        name: "NewPost",
-    }
+// v-if="userLoggedIn" add to line 3, 5
+import Header from "../components/Header.vue";
+
+export default {
+  name: "NewPost",
+  components: {
+    Header,
+  },
+}
 </script>

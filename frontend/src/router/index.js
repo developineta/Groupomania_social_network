@@ -1,7 +1,6 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import Home from "../views/Home.vue";
-//import App from "../App.vue";
 import Signup from "../views/Signup.vue";
 import OnePost from "../views/OnePost.vue";
 import NewPost from "../views/NewPost.vue";
@@ -12,13 +11,8 @@ Vue.use(VueRouter)
 
 const mode = 'history';
 const routes = [
-    /*{
-    path: '/',
-    name: 'App',
-    component: App
-    },*/
   {
-    path: '/user/login',
+    path: '/',
     name: 'Home',
     component: Home
   },
@@ -33,7 +27,7 @@ const routes = [
     component: OnePost
   },
   {
-    path: 'post/',
+    path: '/post/',
     name: 'NewPost',
     component: NewPost
   },

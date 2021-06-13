@@ -1,8 +1,8 @@
 <template>
     <div class="UserProfile">
-        <Header v-if="userLoggedIn"/>
+        <Header />
 
-        <div v-if="userLoggedIn" class="d-flex flex-column">
+        <div class="d-flex flex-column">
             <div v-if="sessionUserId === user.userId || adminAcces === 1">
                 <form id="profile" @submit.prevent = modifyProfile()>
                     <div class="mb-5 mt-15 mx-auto text-h6">Profil d'utilisateur :</div>
@@ -42,20 +42,20 @@
 </template>
 
 <script>
+// v-if="userLoggedIn" add to line 3, 5
 import jwt from 'jsonwebtoken'
 import dotenv from 'dotenv'
 dotenv.config();
 
-import Header from '@/components/Header.vue';
+import Header from "../components/Header.vue";
 
 export default {
   name: 'UserProfile',
-
   components: {
     Header
   },
 
-  data() {
+  /*data() {
     return{
       userLoggedIn: false,
       sessionUserId: 0,
@@ -147,7 +147,7 @@ export default {
         })
       }
     }
-  }
+  }*/
 }
 </script>
 
