@@ -95,6 +95,7 @@ exports.getOnePost = (req, res, next) => {
                     post.postDate AS postDate,
                     post.title AS postTitle,
                     post.postImageUrl AS postImageUrl,
+                    post.content AS postContent,
 
                     FROM posts AS post
 
@@ -115,9 +116,6 @@ exports.getOnePost = (req, res, next) => {
 exports.getAllPosts = (req, res, next) => {
     let tokenData = decodeToken(req);
     let authorId = tokenData[0];
-    let page = req.query.page;          // Récupère le No de la page
-    let offset = 10;                    // Offset par défaut 10
-    offset = offset * (page - 1);       // Multiplication d'offset par le No de la page -1
 
     let getPosts = `SELECT user.userId AS postAuthorId,
                     user.firstName AS postAuthorFirstName,
@@ -130,10 +128,9 @@ exports.getAllPosts = (req, res, next) => {
                     FROM posts AS post
                     
                     JOIN users AS user ON post.userId = user.id
-                    GROUP BY post.id ORDER BY postDate DESC
-                    LIMIT 10 OFFSET ?`;
-    let data = [authorId, offset];
-    getPosts = mysql.format(getPosts, data);
+                    GROUP BY post.id ORDER BY postDate DESC`;
+
+    getPosts = mysql.format(getPosts, [authorId]);
     mysql.query(getPosts, function (err, result) {
         if (err) {
             return res.status(500).json(err.message);
@@ -141,7 +138,7 @@ exports.getAllPosts = (req, res, next) => {
         if (result == 0) {
             return res.status(400).json({ message: "Le post n'existe pas !" });
         } else {
-            getPosts = `SELECT COUNT(*) FROM posts;`;
+            res.status(200).json(result);
         }
     });
 };

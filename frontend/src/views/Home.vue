@@ -1,19 +1,22 @@
 <template>
   <div class="home">
-    <Header />
-    <Login />
+    <Login v-if="!userLoggedIn"/>
+    <Header v-if="userLoggedIn"/>
+    <AllPosts v-if="userLoggedIn"/>
   </div>
 </template>
 
 <script>
-import Header from "../components/Header.vue";
 import Login from "../components/Login.vue";
+import Header from "../components/Header.vue";
+import AllPosts from "../components/AllPosts.vue";
 
 export default {
   name: "Home",
   components: {
-    Header,
     Login,
+    Header,
+    AllPosts
   },
   data() {
     return{

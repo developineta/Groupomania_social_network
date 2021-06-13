@@ -12,7 +12,7 @@ router.post('/', multer, postCtrl.createPost); //remettre auth
 router.delete('/:id', myPost, adminPost, postCtrl.deletePost); //remettre auth
 router.get('/:id', postCtrl.getOnePost); //remettre auth
 router.get('/', postCtrl.getAllPosts); //remettre auth
-router.get("/user", postCtrl.oneUserPosts); //remettre auth
+router.get("/oneuser", postCtrl.oneUserPosts); //remettre auth
 //router.post('/:id/like', auth, postCtrl.likesDislikes);
 //router.post('/:id/comment', auth, postCtrl.postComment);
 
