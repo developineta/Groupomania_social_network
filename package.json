@@ -1,5 +1,22 @@
 {
+  "name": "grupomania_social_network",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/developineta/Grupomania_social_network.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/developineta/Grupomania_social_network/issues"
+  },
+  "homepage": "https://github.com/developineta/Grupomania_social_network#readme",
   "dependencies": {
-    "node-sass": "^6.0.0"
+    "vue-router": "^4.0.8"
   }
 }
