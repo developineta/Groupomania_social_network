@@ -1,15 +1,10 @@
 require('dotenv').config();
 const mysql = require('../msqlConnect').connection;
 const fs = require("fs");
-const jwt = require("jsonwebtoken");
+require('../middleware/auth');
+require('../middleware/multer-config');
 
-// Utilise le token pour récuperer les donnés d'utilisateur sur les routes de publications
-function decodeToken(req) {                                                    
-    let token = req.headers.authorization.split(' ')[1];              // Récupère uniquement le token du header de la requête
-    let decode = jwt.verify(token, process.env.RANDOM_TOKEN_SECRET);
-    decode = [decode.userId];
-    return decode;
-};
+const decodeToken = require('../utils/decodeToken');
 
 exports.createPost = (req, res, next) => {
     let tokenData = decodeToken(req);
@@ -30,8 +25,9 @@ exports.createPost = (req, res, next) => {
         });
     } else {                        // Si le post ne contient pas d'image        
         let postImageUrl = "";
-        let data = [authorId, title, postImageUrl, content];                                                   
-        mysql.query(newPost, data, function (err, res) {
+        let data = [authorId, title, postImageUrl, content];
+        console.log("Data pour post", data);                                                   
+        mysql.query(newPost, data, function (err, result) {
             if (err) {
                 return res.status(500).json(err.message);
             }
@@ -40,70 +36,94 @@ exports.createPost = (req, res, next) => {
     }
 };
 
-/*function insertPost(){
-    let authorId = "14";
-    let title = "Test post";
-    let content = "C'est le premier post qui est super interessant !";      
-    let postImageUrl = "";
-    let data = [authorId, title, postImageUrl, content];
-                                                      
-    mysql.query("INSERT INTO post SET authorId=?, title=?, postImageUrl=?, content=?", data, function (err, res) {
-        if (err) {
-            return res.status(400).json(err.message);
-        } else (res) =>{
-            res.status(201).json({ message: "Post créé !" });
-        }
-    });
-};
-insertPost();*/
-
 exports.deletePost = (req, res, next) => { 
-    const postId = req.params.id;
+    let postId = req.params.id;
 
-    let selectPost = "SELECT postImageUrl FROM post WHERE postId=?";
-    mysql.query(selectPost, [postId], function (err, result) {
+    let selectImage = "SELECT postImageUrl FROM post WHERE postId=?";
+    let deletePost = "DELETE FROM post WHERE postId=?";
+    
+    mysql.query(selectImage, [postId], function (err, result) {
         if (err) {
             return res.status(500).json(err.message);
         }
-        const filename = result[0].postImageUrl.split("/images/")[1];
-        if (filename !== "") {                                          // Si l'image existe
+        
+        if (result[0].postImageUrl !== "") {                          // Si l'image existe
+            const filename = res[0].postImageUrl.split("/images/")[1];
             fs.unlink(`images/${filename}`, (e) => { // Supprime le fichier d'image
                 if(err) {
-                    console.log(err);
+                    return res.status(500).json(err.message);
                 }
-            });
+                res.status(200).json({ message: "L'image est enlevée !" });
+            })
         }
-        let deletePost = "DELETE FROM post WHERE postId=?";
-        mysql.query(deletePost, [postId], function (err, result) {
-            if (err) {
-                return res.status(500).json(err.message);
-            }
-            res.status(200).json({ message: "L'article est supprimé !" });
-        });
+    })
+    mysql.query(deletePost, [postId], function (err, result) {
+        if (err) {
+            return res.status(500).json(err.message);
+        }
+        res.status(200).json({ message: "L'article est supprimé !" });
     });
 };
 
 exports.getOnePost = (req, res, next) => {
-    let tokenData = decodeToken(req);
-    let authorId = tokenData[0];
     let postId = req.params.id;
 
     let getPost = `SELECT user.userId AS postAuthorId,
                     user.firstName AS postAuthorFirstName,
                     user.lastName AS postAuthorLastName,
                     post.postId AS postId,
-                    post.postDate AS postDate,
+                    post.date AS postDate,
                     post.title AS postTitle,
                     post.postImageUrl AS postImageUrl,
-                    post.content AS postContent,
+                    post.content AS postContent
 
-                    FROM posts AS post
+                    FROM post
 
-                    JOIN users AS user ON post.userId = user.id
-                    WHERE post.id = ? GROUP BY post.id`;
-    let data = [authorId, postId];
-    let getPostById = mysql.format(getPost, data);
-    mysql.query(getPostById, data, function (err, result) {
+                    JOIN user ON post.authorId = user.userId
+                    WHERE post.authorId=? AND postId=? GROUP BY post.authorId`;
+    
+    let selectAuthor = "SELECT authorId FROM post WHERE postId=?";
+    
+    mysql.query(selectAuthor, [postId], function (err, result) {
+        if (err) {
+            return res.status(500).json(err.message);
+        }
+        //res.status(200).json({ message: "L'autheur est séléctionné !", result })
+        console.log("L'auteur est sélectionné !");
+    
+        let authorId = result[0].authorId;
+        console.log("authorId", authorId);
+        let data = [authorId, postId];
+        console.log("get data", data);
+        mysql.query(getPost, data, function (err, result) {
+            if (err) {
+                return res.status(500).json(err.message);
+            }
+            if (result == 0) {
+                return res.status(400).json({ message: "L'article n'existe pas !" });
+            }
+            console.log("result de get one post", result);
+            res.status(200).json(result);
+        });
+    })
+};
+
+exports.getAllPosts = (req, res, next) => {
+
+    let getPosts = `SELECT user.userId AS postAuthorId,
+                    user.firstName AS postAuthorFirstName,
+                    user.lastName AS postAuthorLastName,
+                    post.postId AS postId,
+                    post.date AS postDate,
+                    post.title AS postTitle,
+                    post.postImageUrl AS postImageUrl
+
+                    FROM post
+                    
+                    JOIN user ON post.authorId = user.userId
+                    GROUP BY post.postId ORDER BY postDate DESC`;
+
+    mysql.query(getPosts, function (err, result) {
         if (err) {
             return res.status(500).json(err.message);
         }
@@ -113,61 +133,30 @@ exports.getOnePost = (req, res, next) => {
         res.status(200).json(result);
     });
 };
-exports.getAllPosts = (req, res, next) => {
-    let tokenData = decodeToken(req);
-    let authorId = tokenData[0];
-
-    let getPosts = `SELECT user.userId AS postAuthorId,
-                    user.firstName AS postAuthorFirstName,
-                    user.lastName AS postAuthorLastName,
-                    post.postId AS postId,
-                    post.postDate AS postDate,
-                    post.title AS postTitle,
-                    post.postImageUrl AS postImageUrl,
-
-                    FROM posts AS post
-                    
-                    JOIN users AS user ON post.userId = user.id
-                    GROUP BY post.id ORDER BY postDate DESC`;
-
-    getPosts = mysql.format(getPosts, [authorId]);
-    mysql.query(getPosts, function (err, result) {
-        if (err) {
-            return res.status(500).json(err.message);
-        }
-        if (result == 0) {
-            return res.status(400).json({ message: "Le post n'existe pas !" });
-        } else {
-            res.status(200).json(result);
-        }
-    });
-};
 
 exports.oneUserPosts = (req, res, next) => {
+    let authorId = req.params.id;
 
-    let getUserPosts = `SELECT
-                       user.id AS postByUserId,
-                        user.firstName AS publicationCreateByUserNom,
-                        user.lastName AS publicationCreateByUserPrenom,
+    let getUserPosts = `SELECT user.userId AS postAuthorId,
+                        user.firstName AS postAuthorFirstName,
+                        user.lastName AS postAuthorLastName,
                         post.postId AS postId,
-                        post.postDate AS postDate,
+                        post.date AS postDate,
                         post.title AS postTitle,
                         post.postImageUrl AS postImageUrl,
+                        post.content AS postContent
 
-                        FROM posts AS post
-                        
-                        JOIN users AS user ON post.authorId = user.id
-                        WHERE user.id=?
-                        GROUP BY post.id ORDER BY postDate DESC`;
+                        FROM post
 
-    let data = [authorId, userId];
-    getUserPosts = mysql.format(getUserPosts, data);
+                        JOIN user ON post.authorId = user.userId
+                        WHERE post.authorId=?
+                        GROUP BY post.postId ORDER BY postDate DESC`;
 
-    mysql.query(getUserPosts, (error, posts) => {
+
+    mysql.query(getUserPosts, [authorId], function (error, posts) {
         if (error) {
             res.status(400).json({ error: "Aucune publication trouvée !" });
-        } else {
-            res.status(200).json(posts);
         }
+        res.status(200).json(posts);
     });
 };

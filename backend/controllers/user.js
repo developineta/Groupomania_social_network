@@ -1,12 +1,13 @@
 require('dotenv').config();                 // Importation de module Dotenv qui charge fichier .env
 const mysql = require('../msqlConnect').connection;
 const bcrypt = require('bcrypt'); 
-const jwt = require("jsonwebtoken"); 
+const jwt = require("jsonwebtoken");
+require('../middleware/auth');
 const fs = require("fs");
+require('../middleware/multer-config');
 const maskData = require('maskdata');   // Importer le paquet pour le masquage d'email
 
 exports.signup = (req, res, next) => {
-
     bcrypt.hash(req.body.password, 10)  // La fonction pour 'hasher' le mot de passe
     .then(hash => {
         const firstName = req.body.firstName;
@@ -15,12 +16,12 @@ exports.signup = (req, res, next) => {
         const password = hash;
 
         let data = [firstName, lastName, email, password];
-        mysql.query("INSERT INTO user SET firstName=?, lastName=?, email=?, password=?", data, function (err, res) {
+        mysql.query("INSERT INTO user SET firstName=?, lastName=?, email=?, password=?", data, function (err, result) {
             if (err) {
-                return res.status(400).json(err.message);
-            } else (res) =>{
-                res.status(201).json({ message: "Utilisateur est créé !" });
-            }
+               return res.status(400).json(err.message);
+            } 
+                
+            res.status(201).json({ message: "Utilisateur est créé !" });
         });
     })
     .catch(e => res.status(500).json(e));
@@ -123,22 +124,38 @@ exports.modify = (req, res, next) => {
     const firstName = req.body.firstName;
     const lastName = req.body.lastName;
     const role = req.body.role;
-    const password = req.body.password;
-    const filename = result[0].imageUrl.split("/images/")[1];
-    
-    // Cas différents : changement d'image ou changement des infos et changement de mot de passe
+      
+    if (req.body.email && req.body.firstName && req.body.lastName) {
+
+        let changePassword = "UPDATE user SET email=?, firstName=?, lastName=?, role=? WHERE userId=?";
+        let data = [email, firstName, lastName, role, userId];
+        mysql.query(changePassword, data, function (err, result) {
+            if (err) {
+                return res.status(500).json(err.message);
+            }
+            res.status(200).json({ message: "Les infos utilisateurs ont été mise à jour" });
+        });
+
+    }
+}
+
+exports.update_image = (req, res, next) => {
+
     if (req.file) { // Si change l'image, deux cas possibles
+        const userId = req.params.id;
         const imageUrl = `${req.protocol}://${req.get("host")}/images/${req.file.filename}`;
 
         let findImage = "SELECT imageUrl FROM user WHERE userId = ?";
         mysql.query(findImage, [userId], function (err, result) {
+            const filename = result[0].imageUrl.split("/images/")[1];
+            let setImage = "UPDATE user SET imageUrl=? WHERE userId=?";
+            let data = [imageUrl, userId];
             if (err) {
                 return res.status(500).json(err.message);
             }
-            setImage = "UPDATE user SET imageUrl=? WHERE userId=?";
-            if (filename !== "imageDefault.png") {                  // Si l'image existait et on la change
+            if (filename !== "imageDefault.png") {     // Si l'image existait et on la change             
                 fs.unlink(`images/${filename}`, () => {             // On supprime l'ancien fichier d'image
-                    mysql.query(setImage, [imageUrl, userId], function (err, result) {
+                    mysql.query(setImage, data, function (err, result) {
                         if (err) {
                             return res.status(500).json(err.message);
                         }
@@ -146,7 +163,7 @@ exports.modify = (req, res, next) => {
                     });
                 });
             } else { // S'il y avait que l'image par défaut
-                mysql.query(setImage, [imageUrl, userId], function (err, result) {
+                mysql.query(setImage, data, function (err, result) {
                     if (err) {
                         return res.status(500).json(err.message);
                     }
@@ -154,44 +171,28 @@ exports.modify = (req, res, next) => {
                 });
             }
         });
-    
-    } else { // Si change le mot de passe ou les infos de profil
-        let findPassword = "SELECT password FROM user WHERE userId=?"; // Le changement de mot de passe
-        mysql.query(findPassword, [userId], function (err, result) {
-            if (err) {
-                return res.status(500).json(err.message);
-            }
-            const newPassword = req.body.newPassword;
-            bcrypt.compare(password, result[0].password)
-                .then(valid => {
-                    if (!valid) {
-                        return res.status(401).json({ error: "Mot de passe n'est pas correct !" });
-                    }
-                    if (newPassword) {
-                        bcrypt.hash(newPassword, 10)
-                        .then(hash => {
-                            let changePassword = "UPDATE user SET password=? WHERE userId=?";
-                            let data = [hash, userId];
-                            mysql.query(changePassword, data, function (err, result) {
-                                if (err) {
-                                    return res.status(500).json(err.message);
-                                }
-                                res.status(200).json({ message: "Le mot de passe est changé !" });
-                            });
-                        })
-                        .catch(e => res.status(500).json(e));
-                    } 
-                })
-                .catch(e => res.status(500).json(e));
+        
+    }
+
+}
+
+exports.update_password = (req, res, next) => {
+    const userId = req.params.id;
+    const newPassword = req.body.password;
+
+    if (newPassword) {
+        bcrypt.hash(newPassword, 10)
+        .then(hash => {
+            let changePassword = "UPDATE user SET password=? WHERE userId=?";
+            let data = [hash, userId];
+            mysql.query(changePassword, data, function (err, result) {
+                if (err) {
+                    console.log(err);
+                    res.status(500).json(err.message);
+                }
+                res.status(200).json({ message: "Le mot de passe est changé !" });
+            });
         })
-        // Si modifie les infos sauf l'image et sauf le mot de passe
-        let modifyData = "UPDATE user SET email=?, firstName=?, lastName=?, role=? WHERE userId = ?"; // Si ne change pas le mot de passe et pas d'image
-        let data = [email, firstName, lastName, role];
-        mysql.query(modifyData, data, function (err, result) {
-            if (err) {
-                return res.status(500).json(err.message);
-            }
-            res.status(200).json({ message: "Les changements sont pris en compte !" });
-        })
-    } 
-};
+        .catch(e => res.status(500).json(e));
+    }
+}

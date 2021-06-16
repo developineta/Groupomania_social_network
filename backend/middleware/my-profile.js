@@ -1,26 +1,20 @@
 const mysql = require('../msqlConnect').connection;
 
-module.exports = (req, res, next) => {
-    try {
-        console.log("Utilisateur connecté", req.params.id);
-        const userId = req.params.id                        // Utilisateur qui est connecté
-        let myProfile = "SELECT userId FROM user WHERE userId=?";
-        mysql.query(myProfile, [userId], function (err, result) {
-            if (err) {
-                return res.status(500).json(err.message);
-            }
+const decodeToken = require('../utils/decodeToken');
 
-            if(result[0].userId === userId){
-                console.log("C'est votre profil d'utilisateur !");
-                next();
-                
-            }else{
-                return res.status(401).json("Ce n'est pas votre profil d'utilisateur !!");
-            }
-        });
-    } catch {
-        res.status(401).json({
-            error: new Error("Vous n'avez pas les droits requis !!!")
-        });
+module.exports = (req, res, next) => {
+
+    let tokenData = decodeToken(req);
+    let authorId = tokenData[0];
+    const userId = req.params.id
+    console.log("Profil user consulté", req.params.id);
+    console.log("Profil user connecté", userId);
+
+    if(userId == authorId){
+        console.log("C'est votre profil d'utilisateur !");
+        next();
+        
+    }else{
+        return res.status(401).json("Ce n'est pas votre profil d'utilisateur !!");
     }
 };
