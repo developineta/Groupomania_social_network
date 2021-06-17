@@ -26,28 +26,6 @@ exports.signup = (req, res, next) => {
     })
     .catch(e => res.status(500).json(e));
 };
-// Fonctionne
-/*function insertUser() {
-    bcrypt.hash("6passWord", 10)
-    .then(hash => {
-        let firstName = "Nikolai";
-        let lastName = "Volkov";
-        let email = maskData.maskEmail2("nikolai@mail.com");
-        let password = hash;
-        
-        let data = [firstName, lastName, email, password];
-        mysql.query("INSERT INTO user SET firstName=?, lastName=?, email=?, password=?", data, function (err, res) {
-            if (err) {
-                return res.status(400).json(err.message);
-            } else (res) =>{
-                res.status(201).json({ message: "Utilisateur est créé !" });
-            }
-        });
-    })
-    .catch(e => res.status(500).json(e));
-};
-
-insertUser();*/
 
 exports.login = (req, res, next) => {
     const email = maskData.maskEmail2(req.body.email);

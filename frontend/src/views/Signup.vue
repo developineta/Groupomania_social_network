@@ -1,7 +1,8 @@
 <template>
   <div class="signup">
-    <Header />
-
+    <h1 class="text-center">
+      <img class="img-fluid logo-main" alt="Groupomania logo" src="../assets/logo-left.jpg" />
+    </h1>
     <div class="container p-5">
       <p class="h4 mb-4 text-center">Inscription</p>
       <form class="jumbotron py-6" @submit.prevent = signup()>
@@ -16,31 +17,30 @@
         </div>
         <div class="error-msg">{{ message }}</div>
         <div class="btn-signup-page mx-auto mt-6 mb-6">
-          <button class="btn btn-secondary mx-5" id="signup" type="submit">S'inscrire</button>
+          <button class="btn btn-secondary mx-5" id="signup" v-on:click="signup()" type="submit">S'inscrire</button>
         </div>
       </form>
       <div class="btn-signup-page">
-        <router-link to="/" id="login" tag="button" class="btn btn-secondary mx-5">Se Connecter</router-link>
+        <router-link :to="{name:'Login'}" tag="button" class="connexion btn btn-secondary mx-5">Se Connecter</router-link>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-// v-if="userLoggedIn" add to line 3, 5
-import Header from "../components/Header.vue";
 
 export default {
-  name: 'Signup',
-  components: {
-    Header,
-  },
+  name: 'Signup'
 }
 </script>
 
 <style scoped>
+.logo-main {
+  width: 300px;
+}
 .signup {
   background-color: #36393f;
+  height: 100%;
 }
 .container {
   border-top: 1px solid #FD2D01;
@@ -70,5 +70,14 @@ input {
 .btn-secondary {
   background-color: #36393f;
   color: #ffffff;
+}
+.btn-secondary:hover,
+.btn-secondary:focus {
+  background-color: #36393f;
+  color: #FD2D01;
+  font-weight: bold;
+}
+.connexion {
+  background-color: #4f545c;
 }
 </style>

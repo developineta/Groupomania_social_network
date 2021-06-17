@@ -1,10 +1,10 @@
 <template>
-  <div class="OnePublication">
+  <div class="one-post">
     <Header />
 
-    <div class="d-flex flex-column">
+    <div class="d-flex flex-column container p-5">
       <div v-if="post == 0" class="mx-auto mt-5 mb-10" elevation="24" width="600">
-          <div class="my-15 mx-auto text-h4 text-center">Oups.. cette publication n'est pas là..</div>
+          <div class="my-15 mx-auto h4 text-center">Oups.. cette publication n'est pas là..</div>
       </div>
       <v-card class="mx-auto mt-5" v-if="post !== 0" :key="post.postId" elevation="24" width="600">
         <v-list-item five-line class="p-0">
@@ -25,10 +25,10 @@
 </template>
 
 <script>
-// v-if="userLoggedIn" add to line 3, 5
-//import jwt from 'jsonwebtoken';
+//import userSignedIn from "../services/auth";
 import dotenv from 'dotenv'
 dotenv.config();
+//import jwt from 'jsonwebtoken';
 
 import Header from "../components/Header.vue";
 
@@ -39,9 +39,10 @@ export default {
   },
   /*data() {
     return{
-      userLoggedIn: false,
       sessionUserId: 0,
-      adminAcces: 0
+      adminAcces: 0,
+      post: [],
+      message: ""
     };
   },
 
@@ -51,7 +52,7 @@ export default {
 
   mounted() {
     if(this.userLoggedIn === true) {
-      const token = JSON.parse(localStorage.groupomaniaUser).token                           
+      const token = JSON.parse(localStorage.theUser).token                           
       let decodedToken = jwt.verify(token, process.env.VUE_APP_SECRET_TOKEN); // N'est pas fait le token in front
       this.sessionUserId = decodedToken.userId                                            
       this.adminAcces = decodedToken.admin                                       
@@ -61,7 +62,7 @@ export default {
 
   methods: {
     userLoggedIn(){                                    // Item dans Local Storage
-      if(localStorage.groupomaniaUser == undefined){
+      if(localStorage.theUser == undefined){
         this.userLoggedIn = false;
         console.log("Utilisateur n'est pas connecté !");
         this.$router.push({ name:'Home' })
@@ -73,7 +74,7 @@ export default {
 
     getOnePost(){
         const postId = this.$route.params.id;
-        connectedUser.get(`/posts/${postId}`) // a définer connectedUser
+        connectedUser.get(`/post/${postId}`)
         .then(res => {
             if(res.data.post[0] === undefined) {
                 this.post = 0;
@@ -85,7 +86,7 @@ export default {
 
     deletePost(id){
       /*const PostId = id;
-      connectedUser.delete(`/posts/${postId}`)
+      connectedUser.delete(`/post/${postId}`)
       .then((res) => {
         if(res.status === 200) {
             location.href = '/';
@@ -97,5 +98,7 @@ export default {
 </script>
 
 <style scoped>
-
+.one-post {
+  height: 100%;
+}
 </style>

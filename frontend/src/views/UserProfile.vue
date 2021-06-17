@@ -42,7 +42,6 @@
 </template>
 
 <script>
-// v-if="userLoggedIn" add to line 3, 5
 import jwt from 'jsonwebtoken'
 import dotenv from 'dotenv'
 dotenv.config();
