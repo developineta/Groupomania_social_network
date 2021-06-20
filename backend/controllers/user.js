@@ -40,21 +40,24 @@ exports.login = (req, res, next) => {
         if (err) {
             return res.status(500).json(err.message);
         }
+        if (result.length == 0) {
+            return res.status(401).json({ error: "Utilisateur n'est pas trouvé !" });
+        }
         console.log(result);
         bcrypt.compare(password, result[0].password)
-            .then(valid => {
-                if (!valid) {
-                    return res.status(401).json({ error: "Mot de passe n'est pas correct !" });
-                }
-                res.status(200).json({                      // Si l'utilisateur est trouvé
-                    token: jwt.sign(                        // La fonction de signature de 'token'
-                         { userId: result[0].userId },       // Pour créer l'objet de l'Id de l'utilisateur correspondant
-                         process.env.RANDOM_TOKEN_SECRET,    // Utilisation de clé de 'token' secret, crée avec 'crypto' dans le fichier .env
-                         { expiresIn: "24h" }                // Expiration du 'token' en 24h
-                    )
-                });
-            })
-            .catch(e => res.status(500).json(e));
+        .then(valid => {
+            if (!valid) {
+                return res.status(401).json({ error: "Mot de passe n'est pas correct !" });
+            }
+            res.status(200).json({                      // Si l'utilisateur est trouvé
+                token: jwt.sign(                        // La fonction de signature de 'token'
+                        { userId: result[0].userId },       // Pour créer l'objet de l'Id de l'utilisateur correspondant
+                        process.env.RANDOM_TOKEN_SECRET,    // Utilisation de clé de 'token' secret, crée avec 'crypto' dans le fichier .env
+                        { expiresIn: "24h" }                // Expiration du 'token' en 24h
+                )
+            });
+        })
+        .catch(e => res.status(500).json(e));
     });
 };
 
@@ -70,7 +73,7 @@ exports.getOneUser = (req, res, next) => {
     });
 };
 
-exports.delete = (req, res, next) => {
+exports.deleteUser = (req, res, next) => {
     const userId = req.params.id;
 
     let getUser = "SELECT imageUrl FROM user WHERE userId=?";
@@ -105,9 +108,9 @@ exports.modify = (req, res, next) => {
       
     if (req.body.email && req.body.firstName && req.body.lastName) {
 
-        let changePassword = "UPDATE user SET email=?, firstName=?, lastName=?, role=? WHERE userId=?";
-        let data = [email, firstName, lastName, role, userId];
-        mysql.query(changePassword, data, function (err, result) {
+        let changeInfos = "UPDATE user SET email=?, firstName=?, lastName=?, role=? WHERE userId=?";
+        let data = [maskData.maskEmail2(email), firstName, lastName, role, userId];
+        mysql.query(changeInfos, data, function (err, result) {
             if (err) {
                 return res.status(500).json(err.message);
             }

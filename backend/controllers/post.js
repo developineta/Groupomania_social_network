@@ -71,6 +71,7 @@ exports.getOnePost = (req, res, next) => {
     let getPost = `SELECT user.userId AS postAuthorId,
                     user.firstName AS postAuthorFirstName,
                     user.lastName AS postAuthorLastName,
+                    user.admin AS postAdmin,
                     post.postId AS postId,
                     post.date AS postDate,
                     post.title AS postTitle,

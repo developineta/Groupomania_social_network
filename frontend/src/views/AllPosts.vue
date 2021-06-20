@@ -2,10 +2,10 @@
     <div class="all-posts">
         <Header />
         <div class="d-flex flex-column">
-            <div v-if="publications.length === 0" class="empty-message mx-auto mt-5 mb-10" elevation="24" width="600">
+            <div v-if="posts.length === 0" class="empty-message mx-auto mt-5 mb-10" elevation="24" width="600">
                 <div class="mt-15 mb-15 mx-auto text-h4 text-center">Oups.. il n'y a pas de publications..</div>
             </div>
-            <v-card class="mx-auto mt-5" v-for = "post in posts" :key="post.postId" elevation="24" width="600">
+            <v-card class="mx-auto mt-5" v-for="post in posts" :key="post.postId" elevation="24" width="600">
                 <v-list-item two-line class="p-0">
                     <v-list-item-content class="p-0">
                         <div class="name-date px-5 py-3">Publié par {{post.postAuthorFirstName}} {{post.postAuthorLastName}} | le {{dateFormat(post.postDate)}}</div>
@@ -22,33 +22,42 @@
 </template>
 
 <script>
-//import userSignedIn from "../services/auth";
+import authService from "../services/auth";
 import Header from "../components/Header.vue";
+import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+dayjs.extend(customParseFormat)
 
 export default {
     name: "AllPosts",
     components: {
         Header
     },
-
     data(){
         return {
             posts : []                        
         }
     },
 
-    /*mounted() { 
+    mounted() { 
         this.getAllPosts();
     },
-
     methods: {
         getAllPosts(){
-            userSignedIn.get(`/post`)
+            authService.getAllPosts()
             .then(res => {
-                this.posts = res.data[0];
+                console.log(res.data)
+                this.posts = res.data;
             })
+            .catch(err => console.log(err))
+        },
+
+        dateFormat(date){
+        const event = new Date(date);
+        const data = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' };
+        return event.toLocaleDateString('fr-FR', data);
         }
-    }*/
+    }
 }
 </script>
 

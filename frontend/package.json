@@ -10,6 +10,7 @@
   "dependencies": {
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
+    "dayjs": "^1.10.5",
     "dotenv": "^7.0.0",
     "jsonwebtoken": "^8.5.1",
     "vue": "^2.6.11",

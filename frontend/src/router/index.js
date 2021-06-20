@@ -19,9 +19,8 @@ const router = new VueRouter({
       name: 'Home',
       component: Home,
       beforeEnter : (to, from, next) =>{
-        const token = localStorage.getItem('theUser')
+        const token = localStorage.getItem('userToken')
         if(!token){
-          console.log('aucun token trouvé');
           next('/user/login')
         }
         next()
@@ -32,9 +31,8 @@ const router = new VueRouter({
       name: 'AllPosts',
       component: AllPosts,
       beforeEnter : (to, from, next) =>{
-        const token = localStorage.getItem('theUser')
+        const token = localStorage.getItem('userToken')
         if(!token){
-          console.log('aucun token trouvé');
           next('/user/login')
         }
         next()
@@ -55,9 +53,8 @@ const router = new VueRouter({
       name: 'OnePost',
       component: OnePost,
       beforeEnter : (to, from, next) =>{
-        const token = localStorage.getItem('theUser')
+        const token = localStorage.getItem('userToken')
         if(!token){
-          console.log('aucun token trouvé');
           next('/user/login')
         }
         next()
@@ -68,9 +65,8 @@ const router = new VueRouter({
       name: 'NewPost',
       component: NewPost,
       beforeEnter : (to, from, next) =>{
-        const token = localStorage.getItem('theUser')
+        const token = localStorage.getItem('userToken')
         if(!token){
-          console.log('aucun token trouvé');
           next('/user/login')
         }
         next()
@@ -81,12 +77,11 @@ const router = new VueRouter({
       name: 'UserProfile',
       component: UserProfile,
       beforeEnter : (to, from, next) =>{
-        const token = localStorage.getItem('theUser')
+        const token = localStorage.getItem('userToken')
         if(!token){
-          console.log('aucun token trouvé');
           next('/user/login')
         }
-        next()
+        next();
       }
     },
     {
@@ -94,9 +89,8 @@ const router = new VueRouter({
       name: 'OneUserPosts',
       component: OneUserPosts,
       beforeEnter : (to, from, next) =>{
-        const token = localStorage.getItem('theUser')
+        const token = localStorage.getItem('userToken')
         if(!token){
-          console.log('aucun token trouvé');
           next('/user/login')
         }
         next()
@@ -104,13 +98,5 @@ const router = new VueRouter({
     }
   ]
 })
-
-// router.beforeEach((to, from, next) => {
-//   if(localStorage.getItem('theUser')){
-//     next()
-//   }else {
-//     next('/user/login')
-//   }
-// })
 
 export default router
