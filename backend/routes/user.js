@@ -13,11 +13,11 @@ const myProfile = require('../middleware/my-profile');                  // Middl
 // Les routes de user disponibles
 router.post("/signup", passwordSignup, userCtrl.signup);
 router.post("/login", userCtrl.login);
-router.get("/:id", userCtrl.getOneUser); // remettre auth
-router.get("/:id/post", postCtrl.oneUserPosts); //remettre auth  One user all posts
-router.delete("/:id", myProfile, userCtrl.delete); // remettre auth
-router.put("/:id", myProfile, userCtrl.modify); // remettre auth
-router.put("/:id/update_image", myProfile, multer, userCtrl.update_image);
-router.put("/:id/update_password", myProfile, passwordValidation, userCtrl.update_password); 
+router.get("/:id", auth, userCtrl.getOneUser); // remettre auth
+router.get("/:id/post", auth, postCtrl.oneUserPosts); //remettre auth  One user all posts
+router.delete("/:id", auth, userCtrl.deleteUser); // remettre myProfile, auth
+router.put("/:id", auth, userCtrl.modify); // remettre myProfile, auth
+router.put("/:id/update_image", auth, multer, userCtrl.update_image); // remettre myProfile, auth
+router.put("/:id/update_password", auth, passwordValidation, userCtrl.update_password); // remettre myProfile, auth
 
 module.exports = router;                            // Exportation du routeur

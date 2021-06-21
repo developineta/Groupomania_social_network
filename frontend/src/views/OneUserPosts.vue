@@ -17,7 +17,7 @@
       <v-card class="mx-auto mt-5" v-for = "post in posts" :key="post.postId" elevation="24" width="600">
         <v-list-item five-line class="p-0">
           <v-list-item-content class="p-0">
-            <div class="name-date px-5 py-3">Publié par {{post.postAuthorFirstName}} {{post.postAuthorLastName}} | le {{post.postDate}}</div>
+            <div class="name-date px-5 py-3">Publié par {{post.postAuthorFirstName}} {{post.postAuthorLastName}} | le {{dateFormat(post.postDate)}}</div>
             <v-divider horizontal></v-divider>
             <router-link class="router-link" :to="{ name : 'OnePost', params: { id: post.postId }}">
               <div class="title px-2 py-1">{{post.postTitle}}</div>
@@ -33,7 +33,7 @@
 </template>
 
 <script>
-// v-if="userLoggedIn" add to line 3, 5
+import authService from "../services/auth";
 import Header from "../components/Header.vue";
 
 export default {
@@ -43,42 +43,38 @@ export default {
     Header,
   },
 
-  /*data() {
-    return{
-      userLoggedIn: false,
+  data() {
+    return {
+      user: [],
       posts: []
     };
   },
 
-  created(){
-    this.userLoggedIn()
-  },
-
   mounted() {
-    if(this.userLoggedIn === true) {
-      this.allUserPosts();
-    }
+      this.oneUserPosts();
   },
 
   methods: {
-    userLoggedIn(){                                    // Item dans Local Storage
-      if(localStorage.groupomaniaUser == undefined){
-        this.userLoggedIn = false;
-        console.log("Utilisateur n'est pas connecté !");
-        this.$router.push({ name:'Home' })
-      } else {
-        this.userLoggedIn = true;
-        console.log('Utilisateur est connecté !');
-      }
-    },
-
-    allUserPosts(){
-      connectedUser.get("/posts/oneuser")
+    oneUserPosts(){
+      const userId = this.$route.params.id;
+      authService.getOneUser(userId)
       .then(res => {
-          this.posts = res.data;
+        console.log("user data", res.data[0]);
+        this.user = res.data[0]
+      })
+      authService.oneUserPosts(userId)
+      .then(res => {
+        console.log(res.data)
+        this.posts = res.data;
       })
     },
-  }*/
+    
+    dateFormat(date){
+        const event = new Date(date);
+        const data = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' };
+        return event.toLocaleDateString('fr-FR', data);
+    }
+  }
 }
 </script>
 

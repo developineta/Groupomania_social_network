@@ -1,46 +1,25 @@
 <template>
-  <div class="home">
-    <Login />
-    <Header />
-    <AllPosts />
+  <div class="home text-center">
+    <img class="img-fluid logo-main m-5" alt="Groupomania logo" src="../assets/logo-left.jpg" />
+    <h1 class="m-5">Bienvenue au reseau social de Groupomania !</h1>
+    <div class="col text-center">
+      <router-link class="router-link btn btn-info font-weight-bold m-5" :to="{ name : 'Login' }" id="login" tag="button">Se connecter</router-link>
+      <router-link class="router-link btn btn-secondary font-weight-bold m-5" :to="{ name : 'Signup' }" id="signup" tag="button">S'inscrire</router-link>
+    </div>
   </div>
 </template>
 
 <script>
-
-// v-if="!userLoggedIn" add to line 3
-// v-if="userLoggedIn" add to line 4, 5
-import Login from "../components/Login.vue";
-import Header from "../components/Header.vue";
-import AllPosts from "../components/AllPosts.vue";
-
 export default {
-  name: "Home",
-  components: {
-    Login,
-    Header,
-    AllPosts
-  },
-  /*data() {
-    return{
-      loginSuccess: false     // False par défault et contiendra la validation si utilisateur sera authentifié
-    };
-  },
-
-  created(){                        // Vérifie la session utilisateur
-    this.userLoggedIn()
-  },
-
-  methods: {
-    userLoggedIn(){                // Vérification si utilisateur est connecté et dans Local Storage
-      if(localStorage.authorisedUser == undefined) {
-        this.loginSuccess = false;
-        console.log("Vous n'êtes pas connecté !");
-      } else {
-        this.loginSuccess = true;
-        console.log("Vous êtes connecté !");
-      }
-    }
-  }*/
+  name: "Home"
 }
 </script>
+
+<style scoped>
+.home {
+  height: 100%;
+}
+.logo-main {
+  width: 300px;
+}
+</style>
