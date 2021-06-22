@@ -50,8 +50,8 @@ exports.deletePost = (req, res, next) => {
         }
         
         if (result[0].postImageUrl !== "") {                          // Si l'image existe
-            const filename = res[0].postImageUrl.split("/images/")[1];
-            fs.unlink(`images/${filename}`, (e) => { // Supprime le fichier d'image
+            const filename = result[0].postImageUrl.split("/images/")[1];
+            fs.unlink(`images/${filename}`, (err) => { // Supprime le fichier d'image
                 if(err) {
                     return res.status(500).json(err.message);
                 }

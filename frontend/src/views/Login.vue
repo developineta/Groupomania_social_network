@@ -5,8 +5,6 @@
         </h1>
         <div class="container p-5">
             <p class="h4 mb-4 text-center">{{title}}</p>
-            <!-- <p>Votre adresse mail : {{email}}</p> -->
-            <!-- <a :href="link">Lien vers autre site</a> -->
             <form class="jumbotron py-6" @submit.prevent>
               <div class="sentence mb-2 text-center">Les champs sont requis</div>
               <input class="form-control mb-4" type="email" v-model="email" placeholder="E-mail" title="Renseignez votre e-mail" required>
@@ -39,7 +37,6 @@ export default {
             message : "",
             email : "arthury@haricoty.com",
             password : "Haricot123",
-            //link : "facebook.com"
         }
     },
 
@@ -58,7 +55,7 @@ export default {
               location.reload();
             })
             .catch((error) => {
-                this.message = error.response.data.error;                       // Le message d'erreur du backend
+                this.message = (error);                       // Le message d'erreur du backend
             })
         }
     }

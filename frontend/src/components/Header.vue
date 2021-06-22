@@ -6,11 +6,8 @@
     <v-card class="navbar d-flex col row-md" :color="'#4f545c'" min-height='50' tile>
       <router-link :to="{name:'AllPosts'}" id="allposts" class="navbar-brand nav-button" tag="button">Les publications</router-link>
       <router-link :to="{name:'NewPost'}" id="newpost" class="navbar-brand nav-button" tag="button">Créer une publication</router-link>
-      <router-link :to="{name:'UserProfile', params: { id: user.userId }}" id="user-profile" class="navbar-brand nav-button" tag="button">Mon compte</router-link>
+      <router-link :to="{name:'UserProfile', params: { id: sessionUserId }}" id="user-profile" class="navbar-brand nav-button" tag="button">Mon compte</router-link>
       <button v-on:click="deconnecter()" class="navbar-brand nav-button" href="#">Se déconnecter</button>
-      <!--<div class="small-text">
-        <span>{{user.firstName}} {{user.lastName}}</span>
-      </div>-->
     </v-card>
   </div>
 </template>
@@ -21,17 +18,21 @@ import dotenv from 'dotenv'
 dotenv.config();
 import jwt from 'jsonwebtoken';
 import authUser from "../services/auth";
+import {mapState} from "vuex";
 
 export default {
   name: "Header",
   
   data() {
-    return{
-      sessionUserId: 0,
-      adminAcces: 0,
+    return {
       user: []
     }
   },
+
+  computed: mapState({
+    sessionUserId : (state) => state.sessionUserId,
+    adminUser : (state) => state.adminUser
+  }),
 
   mounted () {
     const token = localStorage.getItem('userToken');
@@ -47,15 +48,13 @@ export default {
   methods: {
 
     getOneUser(){
-    const userId = sessionUserId;
-    const adminAcces = adminAcces;
+    let userId = sessionUserId;
+    let adminAcces = adminAcces;
     console.log("userId getOneUser", userId);
     authUser.getOneUser(userId)
       .then(res => {
         console.log("user data", res.data[0]);
         this.user = res.data[0];
-        this.sessionUserId = userId;
-        this.adminAcces = adminAcces;
       })
     },
 

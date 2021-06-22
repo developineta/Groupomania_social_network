@@ -23,7 +23,7 @@
 
             <v-divider v-if="sessionUserId === id || adminUser === 1" horizontal style="border: 1px solid #FEFEFE"></v-divider>
 
-            <button class="delete btn btn-secondary mx-5" v-if="sessionUserId === id || adminUser === 1" v-on:click.prevent="deletePost(post.postId)">Supprimer la publication</button>
+            <button class="delete btn btn-secondary mx-5" v-if="sessionUserId === id || adminUser === 1" v-on:click="deletePost()">Supprimer la publication</button>
             
           </v-list-item-content>
         </v-list-item>
@@ -37,7 +37,7 @@
 import postService from "../services/postService";
 import Header from "../components/Header.vue";
 
-import { mapState } from "vuex"
+import { mapState } from "vuex";
 
 export default {
   name: 'OnePost',
@@ -48,7 +48,7 @@ export default {
   data() {
     return{
       id: null,
-      post: null,
+      post: [],
       message: ""
     };
   },
@@ -76,8 +76,8 @@ export default {
       const postId = this.$route.params.id;
       postService.deletePost(postId)
       .then((res) => {
-        this.post = res.data[0];
-        console.log("L'article a été supprimé !");
+        //this.post = res.data[0];
+        console.log("L'article a été supprimé !", res);
         this.$router.push('/post');
       })
     },

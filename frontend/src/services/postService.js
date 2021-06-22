@@ -14,8 +14,10 @@ postService.interceptors.request.use(function(config) {         // Interceptors 
 });
 
 export default {
-    create(file){
-        return postService.post('/post', {file})
+    createPost(postData) {
+        return postService.post('/post', postData, {
+            headers: {"Content-Type" : "multipart/form-data"}
+        })
     },
     getOnePost(id){
         return postService.get('/post/' + id)

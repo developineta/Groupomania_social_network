@@ -5,19 +5,26 @@
     <div class="container p-5">
       <p class="h4 mb-4 text-center">{{pageTitle}}</p>
       
-      <form class="jumbotron py-6" @submit.prevent enctype="multipart/form-data">
-        <div class="sentence mb-2 text-center">Les champs requis *</div>
+      <form class="formCreate" @submit.prevent="createPost">
 
-        <textarea name="title" v-model="title" class="form-control input" maxlength="60" placeholder="Le titre de votre publication *" title="Saisissez le titre de la publication" required></textarea>
-        <textarea name="content" v-model="content" class="form-control input" maxlength="2000" placeholder="Le contenu de votre publication *" title="Saisissez le contenu de la publication" required></textarea>
-        
-        <div class="custom-file">
-          <input name="image" type="file" ref="file" class="file-input" @change.prevent="chooseImage" />
-          <label class="sentence file-label" for="image">Télécharger un fichier</label>
+        <div class="form-area">
+          <label for="title"></label>
+          <textarea name="title" class="title-post" placeholder="Le titre de votre publication" required v-model="title"></textarea> <br>
         </div>
-        <div class="msg">{{ message }}</div>
-        <button class="btn btn-secondary mx-5" v-on:click.prevent="createPost" type="submit">Publier</button>
-      
+        
+        <div class="form-area">
+          <label for="content"></label>
+          <textarea name="content" class="content-post" placeholder="Le contenu de votre publication" required v-model="content"></textarea> <br>
+        </div>
+
+        <div class="form-area">
+          <label for="image">
+            <input class="image-post" type="file" name="image" ref="file" v-on:change="setImage"> <br>
+          </label>
+        </div>
+
+        <button type="submit">Publier</button>
+
       </form>
     </div>
   </div>
@@ -40,7 +47,7 @@ export default {
       pageTitle: "Ajoutez une publication",
       title: "",
       content: "",
-      image: null,
+      file: "",
       message: ""
     }
   },
@@ -51,41 +58,27 @@ export default {
   }),
 
   methods: {
+
     createPost() {
-      const title  = this.title
-      const content = this.content
-      const file = this.$refs.file.files[0];
-      console.log(file);
-
-      let formData = new FormData();
-      formData.append('file', file);
-      formData.append('title', title);
-      formData.append('content', content);
-
-      console.log("données formulaire", formData);
-
-
-      if(title.length !== 0 && content.length !== 0 ){
-        
-        postService.create(formData,{
-          headers :{
-            'Content-Type': 'multipart/form-data'
-          }
-        })
-        .then((response) => {
-          console.log(response.data);
-        })
-        .catch(err => console.log(err))
-
-      } else {
-          this.message = "Veuillez remplir les champs";
+      let authorId = this.sessionUserId;
+      const formCreate = document.getElementsByClassName("formCreate")[0];
+      let data = new FormData(formCreate);
+      let postData = (authorId, data);
+          
+      postService.createPost(postData)
+      .then(res => {
+        if (res) {
+            window.location.reload()
         }
+      })
+      .catch(error => {
+          console.log( error )
+      });
     },
 
-    chooseImage() {
-      const file = this.$refs.file.files[0];
-      // console.log(file);
-      this.image = file
+    setImage() {
+      this.file = this.$refs.file.files[0];
+      console.log(this.file)
     }
   }
 }
