@@ -16,23 +16,11 @@ authUser.interceptors.request.use(function(config) {         // Interceptors axi
 
 export default {
     authUser,
-    getAllPosts(){
-        return authUser.get('/post')
-    },
-    getOnePost(id){
-        return authUser.get('/post/' + id)
-    },
     login(data){
         return authUser.post('/user/login', data)
     },
-    /*createPost() {
-        return authUser.post('/post/')
-    },*/
     getOneUser(id) {
         return authUser.get('/user/' + id)
-    },
-    deletePost(id){
-        return authUser.delete('/post/' + id)
     },
     deleteUser(id){
         return authUser.delete('/user/' + id)
@@ -40,13 +28,13 @@ export default {
     oneUserPosts(id){
         return authUser.get('/user/' + id + '/post')
     },
-    /*modify(id){
-        return authUser.put('/user/' + id)
+    modify(id, data){
+        return authUser.put('/user/' + id, data)
     },
-    update_password(id){
-        return authUser.put('/user/' + id + '/update_password')
+    update_password(id, password){
+        return authUser.put('/user/' + id + '/update_password', {password})
     },
-    update_image(id){
-        return authUser.put('/user/' + id + '/update_image')
-    }*/
+    update_image(id, formData){
+        return authUser.put('/user/' + id + '/update_image', {formData})
+    }
 }

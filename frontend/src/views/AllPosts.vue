@@ -3,7 +3,7 @@
         <Header />
         <div class="d-flex flex-column">
             <div v-if="posts.length === 0" class="empty-message mx-auto mt-5 mb-10" elevation="24" width="600">
-                <div class="mt-15 mb-15 mx-auto text-h4 text-center">Oups.. il n'y a pas de publications..</div>
+                <div class="mt-15 mb-15 mx-auto text-h4 text-center">Un instant, les publications arrivent..</div>
             </div>
             <v-card class="mx-auto mt-5" v-for="post in posts" :key="post.postId" elevation="24" width="600">
                 <v-list-item two-line class="p-0">
@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import authService from "../services/auth";
+import postService from "../services/postService";
 import Header from "../components/Header.vue";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
@@ -44,7 +44,7 @@ export default {
     },
     methods: {
         getAllPosts(){
-            authService.getAllPosts()
+            postService.getAllPosts()
             .then(res => {
                 console.log(res.data)
                 this.posts = res.data;

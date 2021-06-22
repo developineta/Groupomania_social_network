@@ -15,9 +15,9 @@ router.post("/signup", passwordSignup, userCtrl.signup);
 router.post("/login", userCtrl.login);
 router.get("/:id", auth, userCtrl.getOneUser); // remettre auth
 router.get("/:id/post", auth, postCtrl.oneUserPosts); //remettre auth  One user all posts
-router.delete("/:id", auth, userCtrl.deleteUser); // remettre myProfile, auth
-router.put("/:id", auth, userCtrl.modify); // remettre myProfile, auth
-router.put("/:id/update_image", auth, multer, userCtrl.update_image); // remettre myProfile, auth
-router.put("/:id/update_password", auth, passwordValidation, userCtrl.update_password); // remettre myProfile, auth
+router.delete("/:id", auth, myProfile, userCtrl.deleteUser); // remettre myProfile, auth
+router.put("/:id", auth, myProfile, userCtrl.modify); // remettre myProfile, auth
+router.put("/:id/update_image", myProfile, auth, multer, userCtrl.update_image); // remettre myProfile, auth
+router.put("/:id/update_password", myProfile, auth, passwordValidation, userCtrl.update_password); // remettre myProfile, auth
 
 module.exports = router;                            // Exportation du routeur

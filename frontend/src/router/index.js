@@ -61,7 +61,7 @@ const router = new VueRouter({
       }
     },
     {
-      path: '/post/',
+      path: '/post',
       name: 'NewPost',
       component: NewPost,
       beforeEnter : (to, from, next) =>{

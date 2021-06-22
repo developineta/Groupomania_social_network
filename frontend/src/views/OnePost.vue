@@ -9,7 +9,7 @@
       <v-card class="mx-auto mt-5" v-if="post" :key="post.postId" elevation="24" width="600">
         <v-list-item five-line class="p-0">
           <v-list-item-content class="p-0">
-            <!--<div class="name-date px-5 py-3">Publié par {{post.postAuthorFirstName}} {{post.postAuthorLastName}} | le {{dateFormat(post.postDate)}}</div>-->
+
             <router-link :to="`/user/${ id }`" class="name-date px-5 py-3" tag="button">Publié par {{post.postAuthorFirstName}} {{post.postAuthorLastName}} | le {{dateFormat(post.postDate)}}</router-link>
             <v-divider horizontal></v-divider>
 
@@ -21,10 +21,10 @@
 
             <div class="content p-2">{{post.postContent}}</div>
 
-            <!--<v-divider v-if="sessionUserId === post.postAuthorId || adminAcces === 1" horizontal style="border: 1px solid #FEFEFE"></v-divider>-->
+            <v-divider v-if="sessionUserId === id || adminUser === 1" horizontal style="border: 1px solid #FEFEFE"></v-divider>
 
-            <button  v-on:click.prevent="deletePost(post.postId)" class="delete">Supprimer la publication</button>
-            <!-- à remettre dans le button   v-if="sessionUserId === post.postAuthorId || adminAcces === 1"-->
+            <button class="delete btn btn-secondary mx-5" v-if="sessionUserId === id || adminUser === 1" v-on:click.prevent="deletePost(post.postId)">Supprimer la publication</button>
+            
           </v-list-item-content>
         </v-list-item>
         <div class="message">{{ message }}</div>
@@ -34,8 +34,10 @@
 </template>
 
 <script>
-import authUser from "../services/auth";
+import postService from "../services/postService";
 import Header from "../components/Header.vue";
+
+import { mapState } from "vuex"
 
 export default {
   name: 'OnePost',
@@ -46,8 +48,6 @@ export default {
   data() {
     return{
       id: null,
-      adminAcces: null,
-      sessionUserId: null,
       post: null,
       message: ""
     };
@@ -55,13 +55,15 @@ export default {
   
   mounted() {                                    
     this.getOnePost();
-    this.dateFormat();
   },
-
+  computed: mapState({
+    sessionUserId : (state) => state.sessionUserId,
+    adminUser : (state) => state.adminUser
+  }),
   methods: {
     getOnePost(){
         const postId = this.$route.params.id;
-        authUser.getOnePost(postId)
+        postService.getOnePost(postId)
         .then(res => {
           console.log(res.data);
           this.post = res.data[0];
@@ -72,7 +74,7 @@ export default {
 
     deletePost(){
       const postId = this.$route.params.id;
-      authUser.deletePost(postId)
+      postService.deletePost(postId)
       .then((res) => {
         this.post = res.data[0];
         console.log("L'article a été supprimé !");

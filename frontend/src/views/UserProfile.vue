@@ -3,9 +3,8 @@
       <Header />
 
       <div class="d-flex flex-column">
-        <!-- ajouter aux p title <div v-if="sessionUserId === user.userId">-->
-          <p class="h4 m-4 text-center">{{titleUser}}</p>
-          <p class="h4 m-4 text-center">{{titleMy}}</p>
+          <p v-if="sessionUserId != id" class="h4 m-4 text-center">{{titleUser}}</p>
+          <p v-if="sessionUserId == id" class="h4 m-4 text-center">{{titleMy}}</p>
 
           <v-card class="mx-auto mt-5 mb-8 text-center" elevation="24" width="600">
             <v-list-item three-line class="px-0 py-0">
@@ -13,7 +12,7 @@
                 <div class="name px-5 py-3"> {{user.firstName}} {{user.lastName}}</div>
                 <v-divider horizontal></v-divider>
                 <div class="profile-role px-2 py-1">{{user.role}}</div>
-                <v-img class="user-picture mx-auto mb-2" :src="user.imageUrl" :alt="user.firstName" max-width="600" height="auto"></v-img>
+                <img class="user-picture mx-auto mb-2" :src="'http://localhost:3000' + user.imageUrl" :alt="user.firstName" max-width="600" height="auto"/>
               </v-list-item-content>
             </v-list-item>
             
@@ -22,7 +21,7 @@
             </router-link>
           </v-card>
 
-        <!--<div v-if="sessionUserId === user.userId">-->  
+        <div v-if="sessionUserId == id">
           <form class="jumbotron py-6" @submit.prevent>
 
             <div class="mb-5 mt-8 mx-auto text-h6">
@@ -48,26 +47,26 @@
               <button class="btn btn-secondary mx-5" id="modify-password" type="submit" v-on:click.prevent="update_password()">Modifier le mot de passe</button>
             </div>
 
+            <div class="custom-file mb-3">
+              <input name="image" ref="file" type="file" class="custom-file-input" v-on:change="update_image($event)" />
+              <!--<button class="btn btn-info mx-5" id="update_image" type="submit" v-on:click.prevent="update_image($event)">Ajouter l'image</button>-->
+            </div>
+
             <div class="error-message text-center">{{ deleteErrorMessage }}</div>
             <div class="success-message text-center">{{ deleteSuccessMessage }}</div>
             <div class="mx-auto mt-15 button-delete text-right">
               <button class="btn btn-danger mx-5" id="delete-profile" type="button" v-on:click.prevent="deleteUser()">Supprimer le compte</button>
             </div>
           </form>
-        <!--</div>-->
+        </div>
       </div>
     </div>
 </template>
 
 <script>
-//import jwt from 'jsonwebtoken'
-//import dotenv from 'dotenv'
-//dotenv.config();
-
 import authUser from "../services/auth";
-import axios from "axios";
-
 import Header from "../components/Header.vue";
+import {mapState} from "vuex";
 
 export default {
   name: 'UserProfile',
@@ -79,9 +78,9 @@ export default {
     return{
       titleMy: "Mon profil",
       titleUser: "Profil d'utilisateur",
-      //sessionUserId: 0,
       user: [],
-      id: null,
+      id: "",
+      image: "",
       infosMessage: "",
       infosErrorMessage: "",
       passwordMessage: "",
@@ -91,10 +90,15 @@ export default {
     }
   },
 
+  computed: mapState({
+    sessionUserId : (state) => state.sessionUserId,
+    adminUser : (state) => state.adminUser
+  }),
+
   mounted(){
     this.getOneUser();
   },
-  
+ 
   methods: {
     getOneUser(){
     const userId = this.$route.params.id;
@@ -104,24 +108,24 @@ export default {
         this.user = res.data[0];
         this.id = userId;
       })
+      .catch((error) => {
+        console.log(error);
+      })
     },
 
     modify() {
       const userId = this.$route.params.id;
-      const firstName = this.$refs.firstName.value;
-      const lastName = this.$refs.lastName.value;
-      const email = this.$refs.email.value;
-      const role = this.$refs.role.value;
-
-      axios.put("http://localhost:3000/api/user/" + userId, {
-        firstName,
-        lastName,
-        email,
-        role
-      })
+      let data = {
+        firstName:  this.$refs.firstName.value,
+        lastName:  this.$refs.lastName.value,
+        email: this.$refs.email.value,
+        role: this.$refs.role.value
+      };
+      authUser.modify(userId, data)
       .then((res) => {
         console.log("infos modifiés", res.config.data);
         this.infosMessage = "Votre compte a été modifié !";
+        window.location.reload();
       })
       .catch((error) => {
         console.log(error);
@@ -130,13 +134,13 @@ export default {
     },
     update_password() {
       const userId = this.$route.params.id;
-      const password = this.$refs.newpassword.value;
+      let password = this.$refs.newpassword.value;
       const confirmpassword = this.$refs.confirmpassword.value;
 
       if(password == confirmpassword){
-        axios.put("http://localhost:3000/api/user/" + userId + "/update_password", {
-          password
-        })
+        authUser.update_password(userId, password)
+        //console.log(userId);
+        //console.log(password);
         .then((res) => {
           console.log("infos modifiés", res.config.data);
           this.passwordMessage = "Votre mot de passe a été modifié !";
@@ -149,8 +153,36 @@ export default {
           this.passwordErrorMessage = "Veuillez confirmer le nouveau mot de passe !";
       }
     },
-    
 
+    update_image(event) {
+      const userId = this.$route.params.id;
+      const image = event.target.file;
+      console.log("image", image);
+      console.log(userId);
+
+      /*const formData = new FormData();
+      formData.append("image", image);
+      authUser.update_image(userId, formData)
+      .then((res) => {
+          console.log("mssg image", res);
+          window.location.reload();
+      })
+      .catch((error) => {
+          console.log(error);
+      })*/
+      /*axios.put("http://localhost:3000/api/user/" + userId + "/update_image", {
+        image
+      })
+        .then((res) => {
+          console.log("Infos update image", res);
+          this.passwordMessage = "L'image est ajouté !";
+        })
+        .catch((error) => {
+          console.log(error)
+          this.passwordErrorMessage = "L'ajout d'image a échoué !";
+        })*/
+    },
+    
     deleteUser(){
       if(window.confirm("Attention !! Vous êtes au point de supprimer votre compte définitivement !")){
         const userId = this.$route.params.id;
@@ -172,6 +204,11 @@ export default {
 }
 </script>
 
-<style>
-
+<style scoped>
+.user-picture {
+  max-width: 200px;
+}
+.custom-file-input {
+  opacity: 1;
+}
 </style>

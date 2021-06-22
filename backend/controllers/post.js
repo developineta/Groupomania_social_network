@@ -9,11 +9,13 @@ const decodeToken = require('../utils/decodeToken');
 exports.createPost = (req, res, next) => {
     let tokenData = decodeToken(req);
     let authorId = tokenData[0];
-    console.log("Id utilisateur", authorId);
+
     let title = req.body.title;
     let content = req.body.content;
     let newPost = "INSERT INTO post SET authorId=?, title=?, postImageUrl=?, content=?";
 
+    console.log(req.file);
+    
     if (req.file !== undefined) {    // Si le post contient l'image
         let postImageUrl = `${req.protocol}://${req.get("host")}/images/${req.file.filename}`;
         let data = [authorId, title, postImageUrl, content];                                                   

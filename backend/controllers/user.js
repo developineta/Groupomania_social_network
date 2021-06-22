@@ -34,7 +34,7 @@ exports.login = (req, res, next) => {
     console.log("email", req.body.email);
     console.log("password", req.body.password);
 
-    const getUser = "SELECT userId, password FROM user WHERE email=?";
+    const getUser = "SELECT userId, password, admin FROM user WHERE email=?";
 
     mysql.query(getUser, [email], function (err, result) {
         if (err) {
@@ -49,11 +49,11 @@ exports.login = (req, res, next) => {
             if (!valid) {
                 return res.status(401).json({ error: "Mot de passe n'est pas correct !" });
             }
-            res.status(200).json({                      // Si l'utilisateur est trouvé
-                token: jwt.sign(                        // La fonction de signature de 'token'
-                        { userId: result[0].userId },       // Pour créer l'objet de l'Id de l'utilisateur correspondant
-                        process.env.RANDOM_TOKEN_SECRET,    // Utilisation de clé de 'token' secret, crée avec 'crypto' dans le fichier .env
-                        { expiresIn: "24h" }                // Expiration du 'token' en 24h
+            res.status(200).json({                                                  // Si l'utilisateur est trouvé
+                token: jwt.sign(                                                    // La fonction de signature de 'token'
+                        { userId: result[0].userId, admin: result[0].admin },       // Pour créer l'objet de l'Id et valeur d'admin de l'utilisateur correspondant
+                        process.env.RANDOM_TOKEN_SECRET,                            // Utilisation de clé de 'token' secret, crée avec 'crypto' dans le fichier .env
+                        { expiresIn: "24h" }                                        // Expiration du 'token' en 24h
                 )
             });
         })
