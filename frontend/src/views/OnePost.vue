@@ -4,7 +4,7 @@
 
     <div class="d-flex flex-column container p-5">
       <div v-if="post == 0" class="mx-auto mt-5 mb-10" elevation="24" width="600">
-          <div class="my-15 mx-auto h4 text-center">Oups.. cette publication n'est pas là..</div>
+          <div class="my-15 mx-auto h4 text-center">Un instant...</div>
       </div>
       <v-card class="mx-auto mt-5" v-if="post" :key="post.postId" elevation="24" width="600">
         <v-list-item five-line class="p-0">
@@ -70,16 +70,23 @@ export default {
           this.id = res.data[0].postAuthorId;
           this.adminAcces = res.data[0].postAdmin;
         })
+        .catch(error => {
+          console.log( error )
+        });
     },
 
     deletePost(){
-      const postId = this.$route.params.id;
-      postService.deletePost(postId)
+      let postId = this.$route.params.id;
+      let postImageUrl = this.postImageUrl;
+      postService.deletePost(postId, postImageUrl)
       .then((res) => {
-        //this.post = res.data[0];
+        this.post = res.data[0];
         console.log("L'article a été supprimé !", res);
         this.$router.push('/post');
       })
+      .catch(error => {
+          console.log( error )
+      });
     },
 
     dateFormat(date){

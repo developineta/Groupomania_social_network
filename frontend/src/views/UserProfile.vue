@@ -9,10 +9,15 @@
           <v-card class="mx-auto mt-5 mb-8 text-center" elevation="24" width="600">
             <v-list-item three-line class="px-0 py-0">
               <v-list-item-content class="px-0 py-0">
-                <div class="name px-5 py-3"> {{user.firstName}} {{user.lastName}}</div>
+                <div class="name dard-title px-5 py-3"> {{user.firstName}} {{user.lastName}}</div>
                 <v-divider horizontal></v-divider>
                 <div class="profile-role px-2 py-1">{{user.role}}</div>
-                <img class="user-picture mx-auto mb-2" :src="'http://localhost:3000' + user.imageUrl" :alt="user.firstName" max-width="600" height="auto"/>
+                <div v-if="user.imageUrl == '/images/imageDefault.png'">
+                  <img class="user-picture mx-auto mb-2 card-img" :src="'http://localhost:3000/images/imageDefault.png'" :alt="user.firstName" />
+                </div>
+                <div v-else>
+                  <img class="mx-auto mb-2 card-img" :src="user.imageUrl" :alt="user.firstName" />
+                </div>
               </v-list-item-content>
             </v-list-item>
             
@@ -46,18 +51,23 @@
               
               <button class="btn btn-secondary mx-5" id="modify-password" type="submit" v-on:click.prevent="update_password()">Modifier le mot de passe</button>
             </div>
-
-            <div class="custom-file mb-3">
-              <input name="image" ref="file" type="file" class="custom-file-input" v-on:change="update_image($event)" />
-              <!--<button class="btn btn-info mx-5" id="update_image" type="submit" v-on:click.prevent="update_image($event)">Ajouter l'image</button>-->
-            </div>
-
-            <div class="error-message text-center">{{ deleteErrorMessage }}</div>
-            <div class="success-message text-center">{{ deleteSuccessMessage }}</div>
-            <div class="mx-auto mt-15 button-delete text-right">
-              <button class="btn btn-danger mx-5" id="delete-profile" type="button" v-on:click.prevent="deleteUser()">Supprimer le compte</button>
-            </div>
           </form>
+
+          <form class="imageForm">
+            <label for="image" class="addImage">
+              <div class="form-area">
+                <input class="image-profile" type="file" name="image" ref="file" v-on:change="setImage">
+                <button type="submit" v-on:click.prevent="update_image">Publier image</button>
+              </div>
+            </label>
+          </form>
+
+          <div class="error-message text-center">{{ deleteErrorMessage }}</div>
+          <div class="success-message text-center">{{ deleteSuccessMessage }}</div>
+          <div class="mx-auto mt-15 button-delete text-right">
+            <button class="btn btn-danger mx-5" id="delete-profile" type="button" v-on:click.prevent="deleteUser()">Supprimer le compte</button>
+          </div>
+          
         </div>
       </div>
     </div>
@@ -116,8 +126,8 @@ export default {
     modify() {
       const userId = this.$route.params.id;
       let data = {
-        firstName:  this.$refs.firstName.value,
-        lastName:  this.$refs.lastName.value,
+        firstName: this.$refs.firstName.value,
+        lastName: this.$refs.lastName.value,
         email: this.$refs.email.value,
         role: this.$refs.role.value
       };
@@ -139,8 +149,6 @@ export default {
 
       if(password == confirmpassword){
         authUser.update_password(userId, password)
-        //console.log(userId);
-        //console.log(password);
         .then((res) => {
           console.log("infos modifiés", res.config.data);
           this.passwordMessage = "Votre mot de passe a été modifié !";
@@ -154,34 +162,27 @@ export default {
       }
     },
 
-    update_image(event) {
-      const userId = this.$route.params.id;
-      const image = event.target.file;
-      console.log("image", image);
-      console.log(userId);
-
-      /*const formData = new FormData();
-      formData.append("image", image);
-      authUser.update_image(userId, formData)
-      .then((res) => {
-          console.log("mssg image", res);
+    update_image() {
+      let userId = this.sessionUserId;
+      const formCreate = document.getElementsByClassName("imageForm")[0];
+      let data = new FormData(formCreate);
+          
+      authUser.update_image(userId, data)
+      .then(res => {
+        if (res) {
           window.location.reload();
+        }
       })
-      .catch((error) => {
-          console.log(error);
-      })*/
-      /*axios.put("http://localhost:3000/api/user/" + userId + "/update_image", {
-        image
-      })
-        .then((res) => {
-          console.log("Infos update image", res);
-          this.passwordMessage = "L'image est ajouté !";
-        })
-        .catch((error) => {
-          console.log(error)
-          this.passwordErrorMessage = "L'ajout d'image a échoué !";
-        })*/
+      .catch(error => {
+          console.log( error )
+      });
     },
+
+    setImage() {
+      this.file = this.$refs.file.files[0];
+      console.log(this.file)
+    },
+
     
     deleteUser(){
       if(window.confirm("Attention !! Vous êtes au point de supprimer votre compte définitivement !")){

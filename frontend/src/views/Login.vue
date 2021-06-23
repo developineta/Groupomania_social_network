@@ -35,8 +35,8 @@ export default {
         return {
             title: "Connexion",
             message : "",
-            email : "arthury@haricoty.com",
-            password : "Haricot123",
+            email : "",
+            password : "",
         }
     },
 

@@ -1,6 +1,6 @@
 const passwordSchema = require('../models/Password');
 
-// La vérification de mot de passe à la création
+// La vérification de mot de passe à la modification
 module.exports = (req, res, next) => { 
     newPassword = req.body.password;
     if (!passwordSchema.validate(newPassword)) {

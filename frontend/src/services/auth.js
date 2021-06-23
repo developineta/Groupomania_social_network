@@ -34,7 +34,9 @@ export default {
     update_password(id, password){
         return authUser.put('/user/' + id + '/update_password', {password})
     },
-    update_image(id, formData){
-        return authUser.put('/user/' + id + '/update_image', {formData})
+    update_image(id, data) {
+        return authUser.put('/user/' + id + '/update_image', data, {
+            headers: {"Content-Type" : "multipart/form-data"}
+        })
     }
 }

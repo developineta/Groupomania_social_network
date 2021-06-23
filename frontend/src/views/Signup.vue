@@ -35,11 +35,11 @@ export default {
   data() {
     return {
       title: "Inscription",
-      firstName: "Arthur",
-      lastName: "Haricot",
-      email: "haricot@haricot.com",
-      password : "Haricot123",
-      confirmPassword: "Haricot123",
+      firstName: "",
+      lastName: "",
+      email: "",
+      password : "",
+      confirmPassword: "",
       message: "",
     }
   },

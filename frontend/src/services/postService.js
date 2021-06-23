@@ -25,7 +25,7 @@ export default {
     getAllPosts(){
         return postService.get('/post')
     },
-    deletePost(id){
-        return postService.delete('/post/' + id)
+    deletePost(id, postImageUrl){
+        return postService.delete('/post/' + id, {postImageUrl})
     },
 }

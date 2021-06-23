@@ -52,19 +52,24 @@ exports.deletePost = (req, res, next) => {
         if (result[0].postImageUrl !== "") {                          // Si l'image existe
             const filename = result[0].postImageUrl.split("/images/")[1];
             fs.unlink(`images/${filename}`, (err) => { // Supprime le fichier d'image
-                if(err) {
+                mysql.query(deletePost, [postId], function (err, result) {
+                    if (err) {
+                        return res.status(500).json(err.message);
+                    }
+                    res.status(200).json({ message: "L'article est supprimé !" });
+                    console.log(result);
+                })
+            });
+        } else {
+            mysql.query(deletePost, [postId], function (err, result) {
+                if (err) {
                     return res.status(500).json(err.message);
                 }
-                res.status(200).json({ message: "L'image est enlevée !" });
+                res.status(200).json({ message: "L'article est supprimé !" });
+                console.log(result);
             })
         }
     })
-    mysql.query(deletePost, [postId], function (err, result) {
-        if (err) {
-            return res.status(500).json(err.message);
-        }
-        res.status(200).json({ message: "L'article est supprimé !" });
-    });
 };
 
 exports.getOnePost = (req, res, next) => {
