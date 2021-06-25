@@ -11,13 +11,13 @@
               <input class="form-control mb-4" type="password" v-model="password" placeholder="Mot de passe" title="Renseignez votre mot de passe" required>
 
               <div class="error-msg">{{ message }}</div>
-              <div class="btn-login-page mx-auto mt-6 mb-6">
-                <button class="btn btn-secondary mx-5" @click="login" type="submit">Se Connecter</button>
+              <div class="btn-login-page mx-auto mt-6 mb-6 text-center">
+                <button class="btn btn-secondary mx-5" @click="login" type="submit" title="Se connecter">Se Connecter</button>
               </div>
 
               <div class="text-center">
                 <p class="sentence">Vous n'avez pas encore de compte ?
-                  <router-link :to="{name:'Signup'}" id="signup" class="sentence font-weight-bold mx-5" tag="button">S'inscrire</router-link>
+                  <router-link :to="{name:'Signup'}" id="signup" class="sentence font-weight-bold mx-5 p-2" tag="button" title="Créer le compte">S'inscrire</router-link>
                 </p>
               </div>
             </form>
@@ -40,6 +40,10 @@ export default {
         }
     },
 
+    mounted() {
+      localStorage.removeItem('userToken');
+    },
+
     methods: {
         login() {
             const email = this.email;
@@ -54,8 +58,10 @@ export default {
               this.$router.push('/post');
               location.reload();
             })
-            .catch((error) => {
-                this.message = (error);                       // Le message d'erreur du backend
+            .catch((e) => {
+              if (e.response.status === 401) {
+              this.message = "E-mail ou mot de passe incorrect";
+              }
             })
         }
     }
@@ -85,10 +91,6 @@ input {
   max-width: 900px;
   background-color: #36393f;
   color: #ffffff;
-}
-.btn-login-page {
-  display: flex;
-  justify-content: center;
 }
 .btn-secondary {
   background-color: #36393f;

@@ -18,9 +18,8 @@ exports.signup = (req, res, next) => {
         let data = [firstName, lastName, email, password];
         mysql.query("INSERT INTO user SET firstName=?, lastName=?, email=?, password=?", data, function (err, result) {
             if (err) {
-               return res.status(400).json(err.message);
-            } 
-                
+                return res.status(500).json(err.message);
+            }
             res.status(201).json({ message: "Utilisateur est créé !" });
         });
     })
@@ -69,6 +68,9 @@ exports.getOneUser = (req, res, next) => {
         if (err) {
             return res.status(500).json(err.message);
         }
+        if (result.length == 0) {
+            return res.status(400).json({ message: "L'utilisateur n'existe pas !" });
+        }
         res.status(200).json(result);
     });
 };
@@ -81,6 +83,10 @@ exports.deleteUser = (req, res, next) => {
         if (err) {
             return res.status(500).json(err.message);
         }
+        if (result.length == 0) {
+            return res.status(401).json({ error: "Utilisateur n'est pas trouvé !" });
+        }
+
         const filename = result[0].imageUrl.split("/images/")[1];
         if (filename !== "imageDefault.jpg") {
             fs.unlink(`images/${filename}`, (e) => { // Supprime le fichier d'image
@@ -101,20 +107,19 @@ exports.deleteUser = (req, res, next) => {
 
 exports.modify = (req, res, next) => {
     const userId = req.params.id;
-    const email = req.body.email;
     const firstName = req.body.firstName;
     const lastName = req.body.lastName;
     const role = req.body.role;
       
-    if (req.body.email && req.body.firstName && req.body.lastName) {
+    if (req.body.firstName && req.body.lastName) {
 
-        let changeInfos = "UPDATE user SET email=?, firstName=?, lastName=?, role=? WHERE userId=?";
-        let data = [maskData.maskEmail2(email), firstName, lastName, role, userId];
+        let changeInfos = "UPDATE user SET firstName=?, lastName=?, role=? WHERE userId=?";
+        let data = [firstName, lastName, role, userId];
         mysql.query(changeInfos, data, function (err, result) {
             if (err) {
                 return res.status(500).json(err.message);
             }
-            res.status(200).json({ message: "Les infos utilisateurs ont été mise à jour" });
+            res.status(200).json({ message: "Les infos utilisateurs ont été mis à jour" });
         });
 
     }
@@ -168,8 +173,7 @@ exports.update_password = (req, res, next) => {
             let data = [hash, userId];
             mysql.query(changePassword, data, function (err, result) {
                 if (err) {
-                    console.log(err);
-                    res.status(500).json(err.message);
+                    return res.status(500).json(err.message);
                 }
                 res.status(200).json({ message: "Le mot de passe est changé !" });
             });

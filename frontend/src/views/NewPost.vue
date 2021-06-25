@@ -5,25 +5,20 @@
     <div class="container p-5">
       <p class="h4 mb-4 text-center">{{pageTitle}}</p>
       
-      <form class="formCreate" @submit.prevent="createPost">
-
-        <div class="form-area">
-          <label for="title"></label>
-          <textarea name="title" class="title-post" placeholder="Le titre de votre publication" required v-model="title"></textarea> <br>
-        </div>
+      <form class="jumbotron py-6 formCreate" @submit.prevent="createPost">
+        <div class="required mb-2 text-center">Les champs requis *</div>
         
-        <div class="form-area">
-          <label for="content"></label>
-          <textarea name="content" class="content-post" placeholder="Le contenu de votre publication" required v-model="content"></textarea> <br>
+        <div class="post-inputs">
+          <textarea name="title" v-model="title" class="input form-control mb-4 pt-5 pb-0" placeholder="Le titre de votre publication *" title="Saisissez le titre de votre publication" required></textarea> <br>
+        
+          <textarea name="content" v-model="content" class="input form-control mb-4 pt-5 pb-0" placeholder="Le contenu de votre publication *" title="Saisissez le contenu de votre publication" required></textarea> <br>
+        
+          <input class="image-post" type="file" name="image" ref="file" v-on:change="setImage"> <br>
         </div>
 
-        <div class="form-area">
-          <label for="image">
-            <input class="image-post" type="file" name="image" ref="file" v-on:change="setImage"> <br>
-          </label>
+        <div class="btn-newpost mx-auto mt-6 mb-6">
+          <button type="submit" class="btn btn-secondary mx-5 px-5" title="Publier">Publier</button>
         </div>
-
-        <button type="submit">Publier</button>
 
       </form>
     </div>
@@ -92,7 +87,7 @@ export default {
 .container {
   border-top: 1px solid #FD2D01;
 }
-.h4, .sentence {
+.h4, .required {
   color: #ffffff;
 }
 .jumbotron {
@@ -104,6 +99,13 @@ export default {
   max-width: 900px;
   background-color: #36393f;
   color: #ffffff;
+}
+.image-post {
+  border-radius: 10px;
+}
+.btn-newpost {
+  display: flex;
+  justify-content: center;
 }
 .btn-secondary {
   background-color: #36393f;

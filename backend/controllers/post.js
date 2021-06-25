@@ -13,8 +13,6 @@ exports.createPost = (req, res, next) => {
     let title = req.body.title;
     let content = req.body.content;
     let newPost = "INSERT INTO post SET authorId=?, title=?, postImageUrl=?, content=?";
-
-    console.log(req.file);
     
     if (req.file !== undefined) {    // Si le post contient l'image
         let postImageUrl = `${req.protocol}://${req.get("host")}/images/${req.file.filename}`;
@@ -57,7 +55,6 @@ exports.deletePost = (req, res, next) => {
                         return res.status(500).json(err.message);
                     }
                     res.status(200).json({ message: "L'article est supprimé !" });
-                    console.log(result);
                 })
             });
         } else {
@@ -66,7 +63,6 @@ exports.deletePost = (req, res, next) => {
                     return res.status(500).json(err.message);
                 }
                 res.status(200).json({ message: "L'article est supprimé !" });
-                console.log(result);
             })
         }
     })
@@ -78,6 +74,7 @@ exports.getOnePost = (req, res, next) => {
     let getPost = `SELECT user.userId AS postAuthorId,
                     user.firstName AS postAuthorFirstName,
                     user.lastName AS postAuthorLastName,
+                    user.imageUrl AS postAuthorImageUrl,
                     user.admin AS postAdmin,
                     post.postId AS postId,
                     post.date AS postDate,
@@ -96,8 +93,6 @@ exports.getOnePost = (req, res, next) => {
         if (err) {
             return res.status(500).json(err.message);
         }
-        //res.status(200).json({ message: "L'autheur est séléctionné !", result })
-        console.log("L'auteur est sélectionné !");
     
         let authorId = result[0].authorId;
         console.log("authorId", authorId);
@@ -110,7 +105,6 @@ exports.getOnePost = (req, res, next) => {
             if (result == 0) {
                 return res.status(400).json({ message: "L'article n'existe pas !" });
             }
-            console.log("result de get one post", result);
             res.status(200).json(result);
         });
     })
@@ -135,7 +129,7 @@ exports.getAllPosts = (req, res, next) => {
         if (err) {
             return res.status(500).json(err.message);
         }
-        if (result == 0) {
+        if (result.length == 0) {
             return res.status(400).json({ message: "Le post n'existe pas !" });
         }
         res.status(200).json(result);
@@ -161,8 +155,8 @@ exports.oneUserPosts = (req, res, next) => {
                         GROUP BY post.postId ORDER BY postDate DESC`;
 
 
-    mysql.query(getUserPosts, [authorId], function (error, posts) {
-        if (error) {
+    mysql.query(getUserPosts, [authorId], function (err, posts) {
+        if (err) {
             res.status(400).json({ error: "Aucune publication trouvée !" });
         }
         res.status(200).json(posts);

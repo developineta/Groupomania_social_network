@@ -6,6 +6,7 @@
     <div class="container p-5">
       <p class="h4 mb-4 text-center">{{title}}</p>
       <form class="jumbotron py-6" @submit.prevent>
+        
         <div class="required mb-2 text-center">Les champs requis *</div>
         <div class="signup-inputs">
           <input class="form-control mb-4" v-model="firstName" ref="firstName" type="text" placeholder="Prénom *" title="Saisissez votre prénom" required>
@@ -16,11 +17,11 @@
         </div>
         <div class="error-msg">{{ message }}</div>
         <div class="btn-signup-page mx-auto mt-6 mb-6">
-          <button class="btn btn-secondary mx-5" id="signup" @click="signup" type="submit">S'inscrire</button>
+          <button class="btn btn-secondary mx-5" id="signup" @click="signup" type="submit" title="S'inscrire">S'inscrire</button>
         </div>
       </form>
       <div class="btn-signup-page">
-        <router-link :to="{name:'Login'}" tag="button" class="connexion btn btn-secondary mx-5">Se Connecter</router-link>
+        <router-link :to="{name:'Login'}" tag="button" class="connexion btn btn-secondary mx-5" title="Se connecter">Se Connecter</router-link>
       </div>
     </div>
   </div>
@@ -64,8 +65,14 @@ export default {
           console.log("Message backend :", res.data.message);
           this.$router.push('/user/login');
         })
-        .catch((error) => {
-            this.message = error.res.data.error;
+        .catch((e) => {
+          if (e.response.status === 400) {
+            this.message = "Le format de mot de passe n'est pas correct ! Le mot de passe doit contenir au moins 8 caractères, au moins 1 majuscule, au moins 1 minuscule, au moins 1 chiffre et doit être sans les espaces !";
+          }
+          if (e.response.status === 500) {
+            this.message = "E-mail d'utilisateur existe déjà !";
+            //this.message = error.res.data.error;
+          }
         })
       } else {
         this.message = "Veuillez confirmer le mot de passe !";
@@ -98,11 +105,6 @@ input {
   max-width: 900px;
   background-color: #36393f;
   color: #ffffff;
-}
-.signup-inputs {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
 .btn-signup-page {
   display: flex;
