@@ -7,6 +7,7 @@ import Signup from "../views/Signup.vue";
 import OnePost from "../views/OnePost.vue";
 import NewPost from "../views/NewPost.vue";
 import UserProfile from "../views/UserProfile.vue";
+import PasswordUpdate from "../views/PasswordUpdate.vue";
 import OneUserPosts from "../views/OneUserPosts.vue";
 
 Vue.use(VueRouter)
@@ -76,6 +77,18 @@ const router = new VueRouter({
       path: '/user/:id',
       name: 'UserProfile',
       component: UserProfile,
+      beforeEnter : (to, from, next) =>{
+        const token = localStorage.getItem('userToken')
+        if(!token){
+          next('/user/login')
+        }
+        next();
+      }
+    },
+    {
+      path: '/user/:id/update_password',
+      name: 'PasswordUpdate',
+      component: PasswordUpdate,
       beforeEnter : (to, from, next) =>{
         const token = localStorage.getItem('userToken')
         if(!token){

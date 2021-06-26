@@ -35,38 +35,35 @@
           </v-card>
 
         <div v-if="sessionUserId == id">
-          <form class="jumbotron py-6" @submit.prevent>
+          <form class="jumbotron py-6" @submit.stop="modify()">
 
             <div class="mb-5 mt-8 mx-auto text-h6">
-              <div class="success-message text-center">{{ infosMessage }}</div>
-              <div class="error-message text-center">{{ infosErrorMessage }}</div>
-
+              
               <span class="h5 pb-1">Modifier les informations :</span>
-              <input class="form-control mb-4" ref="firstName" type="text" title="Modifier votre prénom" :value="user.firstName" required>
-              <input class="form-control mb-4" ref="lastName" type="text" title="Modifier votre nom" :value="user.lastName" required>
-              <input class="form-control mb-4" ref="role" title="Modifier votre rôle chez Groupomania" type="text" :value="user.role">
+              <input class="form-control mb-4" ref="firstName" type="text" v-model.trim="firstName" :class="{error: validation.hasError('firstName'), valid: validation.isTouched('firstName') && !validation.hasError('firstName')}" title="Modifier votre prénom">
+              <div class="error" v-if="validation.hasError('firstName')">{{ nameError }}</div>
+              
+              <input class="form-control mb-4" ref="lastName" type="text" v-model.trim="lastName" :class="{error: validation.hasError('lastName'), valid: validation.isTouched('lastName') && !validation.hasError('lastName')}" title="Modifier votre nom">
+              <div class="error" v-if="validation.hasError('firstName')">{{ nameError }}</div>
+              
+              <input class="form-control mb-4" ref="role" type="text" v-model.trim="role" :class="{error: validation.hasError('role'), valid: validation.isTouched('role') && !validation.hasError('role')}" title="Modifier votre rôle chez Groupomania">
+              <div class="error" v-if="validation.hasError('role')">{{ nameError }}</div>
 
               <div class="btn-profile-page mx-auto mt-6 mb-6">
-                <button class="btn btn-secondary" id="modify-infos" type="submit" v-on:click="modify()" title="Modifier les informations">Modifier le profil</button>
+                <button class="btn btn-secondary" id="modify-infos" type="submit" :disabled="validation.countErrors() > 0" title="Modifier les informations">Modifier le profil</button>
               </div>
-            </div>
-
-            <v-divider v-if="sessionUserId == id" horizontal></v-divider>
-
-            <div class="mb-5 mt-8 mx-auto text-h6">
-              <div class="success-message text-center">{{ passwordMessage }}</div>
-              <div class="error-message text-center">{{ passwordErrorMessage }}</div>
-              
-              <span class="h5 pb-1">Modifier le mot de passe :</span>
-              <input class="form-control mb-4" ref="newpassword" type="password" title="Saisissez le nouveau mot de passe" placeholder="Mon nouveau mot de passe">
-              <input class="form-control mb-4" ref="confirmpassword" type="password" title="Confirmez le nouveau mot de passe" placeholder="Confirmer mon nouveau mot de passe">
-              
-              <div class="btn-profile-page mx-auto mt-6 mb-6">
-                <button class="btn btn-secondary" id="modify-password" type="submit" v-on:click.prevent="update_password()" title="Modifier le mot de passe">Modifier le mot de passe</button>
-              </div>
-
             </div>
           </form>
+
+          <v-divider v-if="sessionUserId == id" horizontal></v-divider>
+
+          <router-link :to="`/user/${ id }/update_password`" class="user-link pl-2 mb-0" tag="button">
+            <button type="link" class="btn btn-secondary mx-5 px-5" title="Modifier le mot de passe">Modifier le mot de passe</button>
+          </router-link>
+
+          <v-divider v-if="sessionUserId == id" horizontal></v-divider>
+
+          <User v-if="Object.keys(user).length" :user="user"/>
 
           <form class="imageForm py-8 pl-8">
             <div class="h5 pb-1">Ajouter l'image de profil :</div>
@@ -91,26 +88,33 @@
 import authUser from "../services/auth";
 import Header from "../components/Header.vue";
 import {mapState} from "vuex";
+import { Validator } from 'simple-vue-validator';
+import User from '../components/User';
 
 export default {
   name: 'UserProfile',
   components: {
-    Header
+    Header,
+    User,
   },
 
   data() {
     return{
       titleMy: "Mon profil",
       titleUser: "Profil d'utilisateur",
-      user: [],
+      //user: [],
       id: "",
       image: "",
-      infosMessage: "",
-      infosErrorMessage: "",
-      passwordMessage: "",
-      passwordErrorMessage: "",
+      firstName: "",
+      lastName: "",
+      role: "",
+      email: "",
+      user: {},
+      nameError: "Le nom et prénom doivent contenir au moins 3 caractères et contenir que de lettres et les espaces",
+      roleError: "Votre rôle doit contenir au moins 3 caractères et contenir que de lettres et les espaces",
       deleteErrorMessage: "",
-      deleteSuccessMessage: ""
+      deleteSuccessMessage: "",
+      message: ""
     }
   },
 
@@ -121,6 +125,17 @@ export default {
 
   mounted(){
     this.getOneUser();
+  },
+  validators: {
+    firstName(value) {
+      return Validator.value(value).required().minLength(3).regex('^[A-Za-z]*$');
+    },
+    lastName(value) {
+      return Validator.value(value).required().minLength(3).regex('^[A-Za-z]*$');
+    },
+    role(value) {
+      return Validator.value(value).minLength(3).regex('^[A-Za-z]*$');
+    }
   },
  
   methods: {
@@ -139,48 +154,36 @@ export default {
     },
 
     modify() {
-      const userId = this.$route.params.id;
-      let data = {
-        firstName: this.$refs.firstName.value,
-        lastName: this.$refs.lastName.value,
-        role: this.$refs.role.value
-      };
-      authUser.modify(userId, data)
-      .then((res) => {
-        console.log("infos modifiés", res.config.data);
-        this.infosMessage = "Votre compte a été modifié !";
-        this.$router.go();
-      })
-      .catch((error) => {
-        console.log(error);
-          this.infosErrorMessage = "La modification des informations a échoué !";
-      })
-    },
-    update_password() {
-      const userId = this.$route.params.id;
-      let password = this.$refs.newpassword.value;
-      const confirmpassword = this.$refs.confirmpassword.value;
-
-      if(password == confirmpassword){
-        authUser.update_password(userId, password)
-        .then((res) => {
-          console.log("infos modifiés", res.config.data);
-          this.passwordErrorMessage = "";
-          this.passwordMessage = "Votre mot de passe a été modifié !";
-        })
-        .catch((e) => {
-          if (e.response.status === 400) {
-            this.passwordMessage = "";
-            this.passwordErrorMessage = "Le format de mot de passe n'est pas correct ! Le mot de passe doit contenir au moins 8 caractères, au moins 1 majuscule, au moins 1 minuscule, au moins 1 chiffre et doit être sans les espaces !";
-            
+      this.$validate()
+      .then((success) => {
+        if (success) {
+          this.user = {
+            firstName: this.firstName,
+            lastName: this.lastName,
+            role: this.role
           }
-        })
-      } else {
-          this.passwordMessage = "";
-          this.passwordErrorMessage = "Veuillez confirmer le nouveau mot de passe !";
-      }
-    },
+          const userId = this.$route.params.id;
+          
+          let data = {
+            firstName: this.user.firstName,
+            lastName: this.user.lastName,
+            role: this.user.role
+          };
 
+          authUser.modify(userId, data)
+          .then((res) => {
+            console.log("infos modifiés", res.config.data);
+            this.message = "Votre compte a été modifié !";
+            this.$router.go();
+          })
+          .catch((error) => {
+            console.log(error);
+              this.message = "La modification des informations a échoué !";
+          })
+        }
+      })
+    },
+    
     update_image() {
       let userId = this.sessionUserId;
       const formCreate = document.getElementsByClassName("imageForm")[0];
