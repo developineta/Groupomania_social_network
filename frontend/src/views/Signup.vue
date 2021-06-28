@@ -96,14 +96,14 @@ export default {
             firstName: this.firstName,
             lastName: this.lastName,
             email: this.email,
-            password: this.password,
+            password: this.password
           }
         
           axios.post("http://localhost:3000/api/user/signup", { 
             firstName: this.user.firstName,
             lastName: this.user.lastName,
             email: this.user.email,
-            password: this.user.password,
+            password: this.user.password
           })
           
           .then((res) => {

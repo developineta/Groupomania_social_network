@@ -52,7 +52,6 @@ export default {
     let adminAcces = adminAcces;
     authUser.getOneUser(userId)
       .then(res => {
-        console.log("user data", res.data[0]);
         this.user = res.data[0];
       })
     },
@@ -72,14 +71,11 @@ export default {
 .d-flex {
   justify-content: space-around;
 }
-.nav-button {
+.nav-button, .admin {
   color: #ffffff;
 }
 .nav-button:hover, .nav-button:focus {
   color: #FFD7D7;
   text-decoration: underline;
-}
-.admin {
-  color: #FFFFFF;
 }
 </style>

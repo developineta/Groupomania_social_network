@@ -130,7 +130,7 @@ exports.getAllPosts = (req, res, next) => {
             return res.status(500).json(err.message);
         }
         if (result.length == 0) {
-            return res.status(400).json({ message: "Le post n'existe pas !" });
+            return res.status(400).json(result);
         }
         res.status(200).json(result);
     });

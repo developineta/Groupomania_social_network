@@ -52,6 +52,7 @@
               <div class="btn-profile-page mx-auto mt-6 mb-6">
                 <button class="btn btn-secondary" id="modify-infos" type="submit" :disabled="validation.countErrors() > 0" title="Modifier les informations">Modifier le profil</button>
               </div>
+              <div class="message h4 text-center mt-8">{{ message }}</div>
             </div>
           </form>
 
@@ -76,7 +77,7 @@
             </div>
           </form>
 
-          <div class="success-message text-center">{{ deleteMessage }}</div>
+          <div class="message h4 text-center mt-3">{{ deleteMessage }}</div>
           <div class="mx-auto mt-8 button-delete text-right">
             <button class="btn btn-danger mx-5" id="delete-profile" type="button" v-on:click.prevent="deleteUser()" title="Supprimer le compte définitivement">Supprimer le compte</button>
           </div>
@@ -88,6 +89,7 @@
 
 <script>
 import authUser from "../services/auth";
+import authService from "../services/auth";
 import Header from "../components/Header.vue";
 import {mapState} from "vuex";
 import { Validator } from 'simple-vue-validator';
@@ -112,6 +114,7 @@ export default {
       email: "",
       user: {},
       url: null,
+      message: "",
       nameError: "Le nom et prénom doivent contenir 3 au 20 caractères et contenir que de lettres et les espaces",
       roleError: "Votre rôle doit contenir 3 au 60 caractères et avoir que de lettres et les espaces",
       deleteMessage: "",
@@ -144,12 +147,11 @@ export default {
     const userId = this.$route.params.id;
     authUser.getOneUser(userId)
       .then(res => {
-        console.log("user data", res.data[0]);
         this.user = res.data[0];
         this.id = userId;
       })
-      .catch((error) => {
-        console.log(error);
+      .catch((e) => {
+        console.log(e);
       })
     },
 
@@ -172,12 +174,11 @@ export default {
 
           authUser.modify(userId, data)
           .then((res) => {
-            console.log("infos modifiés", res.config.data);
-            this.message = "Votre compte a été modifié !";
-            this.$router.go();
+            this.message = res.data.message;
+            setTimeout( () => this.$router.go(), 3500);
           })
-          .catch((error) => {
-            console.log(error);
+          .catch((e) => {
+            console.log(e);
               this.message = "La modification des informations a échoué !";
           })
         }
@@ -190,8 +191,9 @@ export default {
       let data = new FormData(formCreate);
           
       authUser.update_image(userId, data)
-      .then(() => {
-        this.$router.go();
+      .then((res) => {
+        this.message = res.data.message;
+        setTimeout( () => this.$router.go(), 3000);
       })
       .catch(error => {
           console.log(error)
@@ -200,24 +202,31 @@ export default {
 
     setImage() {
       this.file = this.$refs.file.files[0];
-      console.log(this.file);
       this.url = URL.createObjectURL(this.file);
     },
 
     deleteUser(){
       if(window.confirm("Attention !! Vous êtes au point de supprimer votre compte définitivement !")){
         const userId = this.$route.params.id;
-        authUser.deleteUser(userId)
-        .then((res) => {
-          console.log("Utilisateur supprimé", res);
-          setTimeout(function() {location.href = '/';}, 2000)
-          this.deleteMessage = "Le compte est supprimé !";
-          localStorage.removeItem('userToken');
-        })
-        .catch((e) => {
-          if (e.response.status === 500) {
-          this.deleteMessage = "La suppression de compte a échoué, supprimez vos publications d'abord et recommencez";
-          setTimeout(function() {location.reload()}, 2000)
+        authService.oneUserPosts(userId)
+        .then(res => {
+          let postsTotal = res.data.length;                                       // Avant de supprimer le compte on vérifie si l'utilisateur n'a pas de publications
+  
+          if (postsTotal > 0) {
+            this.deleteMessage = "Veuillez supprimer d'abord toutes les publications associés à votre compte !";
+          } else {
+            authUser.deleteUser(userId)
+            .then((res) => {
+              this.deleteMessage = res.data.message;
+              setTimeout(function() {location.href = '/user/signup';}, 2000)
+              localStorage.removeItem('userToken');
+            })
+            .catch((e) => {
+              if (e.response.status === 500) {
+              this.deleteMessage = "La suppression de compte a échoué !";
+              setTimeout(function() {location.reload()}, 2000)
+              }
+            })
           }
         })
       }

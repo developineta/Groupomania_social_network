@@ -2,8 +2,8 @@
     <div class="all-posts">
         <Header />
         <div class="container d-flex flex-column">
-            <div v-if="posts.length === 0" class="empty-message mx-auto mt-5 mb-10" elevation="24" width="600">
-                <div class="mt-15 mb-15 mx-auto text-h4 text-center">Un instant, les publications arrivent..</div>
+            <div v-if="posts.length === 0" class="mx-auto mt-5 mb-10" elevation="24" width="600">
+                <div class="message my-15 mx-auto h4 text-center">Voulez-vous créer une publication.. ?</div>
             </div>
             <v-card class="jumbotron card mx-auto mt-5 text-center" v-for="post in posts" :key="post.postId" elevation="24" width="600">
                 <v-list-item two-line class="p-0">
@@ -32,7 +32,7 @@ export default {
     },
     data(){
         return {
-            posts : []                        
+            posts : []                     
         }
     },
 
@@ -43,10 +43,13 @@ export default {
         getAllPosts(){ 
             postService.getAllPosts()
             .then(res => {
-                console.log(res.data)
                 this.posts = res.data;
             })
-            .catch(err => console.log(err))
+            .catch((e) => {
+                if (e.response.status === 400) {
+                console.log("Il n'y a pas de publications");
+                }
+            })
         },
 
         dateFormat(date){

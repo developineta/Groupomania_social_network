@@ -23,6 +23,7 @@
         <div class="btn-newpost mx-auto mt-6 mb-6">
           <button type="submit" class="btn btn-secondary mx-5 px-5" title="Publier">Publier</button>
         </div>
+        <div class="message h4 text-center mt-8">{{ message }}</div>
 
       </form>
     </div>
@@ -33,7 +34,7 @@
 import postService from "../services/postService";
 import Header from "../components/Header.vue";
 
-import {mapState} from "vuex";
+import {mapState} from "vuex";                      // Importation données de Vuex store
 
 export default {
   name: "NewPost",
@@ -53,7 +54,7 @@ export default {
   },
 
   computed: mapState({
-    sessionUserId : (state) => state.sessionUserId,
+    sessionUserId : (state) => state.sessionUserId,     // Récupération de user Id et Admin de Vuex store
     adminUser : (state) => state.adminUser
   }),
 
@@ -68,18 +69,18 @@ export default {
       postService.createPost(postData)
       .then(res => {
         if (res) {
-            window.location.reload();
+          this.message = "La publication est ajouté !";
+          setTimeout( () => this.$router.go(), 2500);
         }
       })
-      .catch(error => {
-          console.log( error )
-      });
+      .catch(e => {
+          console.log(e);
+      })
     },
 
     setImage() {
       this.file = this.$refs.file.files[0];
-      console.log(this.file);
-      this.url = URL.createObjectURL(this.file);
+      this.url = URL.createObjectURL(this.file);        // Création de l'apperçu de l'image avant publication
     }
   }
 }

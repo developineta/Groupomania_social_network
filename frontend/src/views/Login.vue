@@ -26,46 +26,45 @@
 </template>
 
 <script>
-import axios from "axios"
+import axios from "axios";                          //Bibliothèque JavaScript en tant que client HTTP. Permet de communiquer avec API en utilisant des requêtes
 
 export default {
     name: "Login",
 
     data() {
         return {
-            title: "Connexion",
-            message : "",
-            email : "",
-            password : "",
+          title: "Connexion",
+          message : "",
+          email : "",
+          password : ""
         }
     },
 
-    mounted() {
-      localStorage.removeItem('userToken');
+    mounted() {                                       
+      localStorage.removeItem('userToken');                   // Le token est supprimé dés qu'on se rend sur la page de connexion
     },
 
-    methods: {
-        login() {
-            const email = this.email;
-            const password = this.password;
+  methods: {
+    login() {
+      const email = this.email;
+      const password = this.password;
 
-            axios.post("http://localhost:3000/api/user/login", {
-                email,
-                password,
-            })
-            .then((res) => {
-              localStorage.setItem('userToken', res.data.token),   // On garde dans le Local Storage
-              this.$router.push('/post');
-              location.reload();
-            })
-            .catch((e) => {
-              console.log(e);
-              if (e.response.status === 401) {
-              this.message = "E-mail ou mot de passe incorrect";
-              }
-            })
+      axios.post("http://localhost:3000/api/user/login", {
+        email,
+        password,
+      })
+      .then((res) => {
+        localStorage.setItem('userToken', res.data.token),   // On garde le token dans le Local Storage
+        this.$router.push('/post');                          // On accède sur la page de publications
+        location.reload();
+      })
+      .catch((e) => {
+        if (e.response.status === 401) {
+        this.message = "E-mail ou mot de passe incorrect";
         }
+      })
     }
+  }
 }
 </script>
 

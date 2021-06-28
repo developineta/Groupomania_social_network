@@ -88,10 +88,10 @@ exports.deleteUser = (req, res, next) => {
         }
 
         const filename = result[0].imageUrl.split("/images/")[1];
-        if (filename !== "imageDefault.jpg") {
+        if (filename !== "imageDefault.png") {
             fs.unlink(`images/${filename}`, (e) => { // Supprime le fichier d'image
-                if(err) {
-                    console.log(err);
+                if(e) {
+                    console.log(e);
                 }
             });
         }
@@ -100,7 +100,7 @@ exports.deleteUser = (req, res, next) => {
             if (err) {
                 return res.status(500).json(err.message);
             }
-            res.status(200).json({ message: "Utilisateur est supprimé !" });
+            res.status(200).json({ message: "Votre compte est supprimé !" });
         });
     });
 };
@@ -119,7 +119,7 @@ exports.modify = (req, res, next) => {
             if (err) {
                 return res.status(500).json(err.message);
             }
-            res.status(200).json({ message: "Les infos utilisateurs ont été mis à jour" });
+            res.status(200).json({ message: "Votre profil a été modifié !" });
         });
 
     }
@@ -175,7 +175,7 @@ exports.update_password = (req, res, next) => {
                 if (err) {
                     return res.status(500).json(err.message);
                 }
-                res.status(200).json({ message: "Le mot de passe est changé !" });
+                res.status(200).json({ message: "Votre mot de passe a été modifié !" });
             });
         })
         .catch(e => res.status(500).json(e));

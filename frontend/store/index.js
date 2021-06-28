@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import Vuex from 'vuex';
+import Vuex from 'vuex';                 // Le gestionnaire d'état; une bibliothèque tant que zone de stockage de données centralisée pour les autres composants d'application
 
 Vue.use(Vuex)
 

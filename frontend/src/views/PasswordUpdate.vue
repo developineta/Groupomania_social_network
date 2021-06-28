@@ -15,6 +15,7 @@
             <div class="btn-profile-page mx-auto mt-6 mb-6">
               <button class="btn btn-secondary" id="modify-password" type="submit" :disabled="validation.countErrors() > 0" title="Modifier le mot de passe">Modifier le mot de passe</button>
             </div>
+            <div class="message h4 text-center mt-8">{{ message }}</div>
 
           </div>
         </form>
@@ -27,7 +28,7 @@
 import authUser from "../services/auth";
 import Header from "../components/Header.vue";
 import {mapState} from "vuex";
-import { Validator } from 'simple-vue-validator';
+import { Validator } from 'simple-vue-validator';           // Validation de mot de passe avec package Simple-vue-validator
 import User from '../components/User';
 
 export default {
@@ -46,6 +47,7 @@ export default {
       user: {},
       passwordError: "Le mot de passe doit contenir au moins 8 caractères, au moins 1 majuscule, au moins 1 minuscule, au moins 1 chiffre et doit être sans les espaces !",
       confirmPasswordError: "Veuillez confirmer le mot de passe !",
+      message: ""
     }
   },
 
@@ -54,9 +56,6 @@ export default {
     adminUser : (state) => state.adminUser
   }),
 
-  mounted(){
-    
-  },
   validators: {
     password(value) {
       return Validator.value(value).required().minLength(8).regex(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$/);
@@ -72,7 +71,7 @@ export default {
   methods: {
 
     update_password() {
-      this.$validate()
+      this.$validate()                                                // Validation de modification de mot de passe avant la soumission
       .then((success) => {
         if (success) {
           this.user = {
@@ -83,9 +82,8 @@ export default {
 
           authUser.update_password(userId, password)
           .then((res) => {
-            console.log("infos modifiés", res.config.data);
-            this.message = "Votre mot de passe a été modifié !";
-            this.$router.push('/user/' + userId);
+            this.message = res.data.message;
+            setTimeout( () => this.$router.push({ path: '/user/' + userId}), 2500);
           })
           .catch((error) => {
             console.log(error);

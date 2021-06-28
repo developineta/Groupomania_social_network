@@ -76,12 +76,10 @@ export default {
       const userId = this.$route.params.id;
       authService.getOneUser(userId)
       .then(res => {
-        console.log("user data", res.data[0]);
         this.user = res.data[0]
       })
       authService.oneUserPosts(userId)
       .then(res => {
-        console.log(res.data)
         this.posts = res.data;
       })
     },

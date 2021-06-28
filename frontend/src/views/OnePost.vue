@@ -6,7 +6,10 @@
       <div v-if="post == 0" class="mx-auto mt-5 mb-10" elevation="24" width="600">
           <div class="my-15 mx-auto h4 text-center">Un instant...</div>
       </div>
-      <v-card class="card mx-auto mt-5" v-if="post" :key="post.postId" elevation="24" width="600">
+      <div class="message h4 text-center">{{ message }}</div>
+      <router-link v-if="post == 0" :to="{name:'AllPosts'}" id="posts-btn" class="btn btn-secondary m-auto" tag="button" title="Voir les publications">Rétour aux publications</router-link>
+
+      <v-card v-if="post" class="card mx-auto mt-5" :key="post.postId" elevation="24" width="600">
         <v-list-item five-line class="p-0">
           <v-list-item-content class="card-content p-0">
 
@@ -41,7 +44,6 @@
             
           </v-list-item-content>
         </v-list-item>
-        <div class="message">{{ message }}</div>
       </v-card>
     </div>
   </div>
@@ -81,14 +83,13 @@ export default {
         const postId = this.$route.params.id;
         postService.getOnePost(postId)
         .then(res => {
-          console.log(res.data);
           this.post = res.data[0];
           this.id = res.data[0].postAuthorId;
           this.adminAcces = res.data[0].postAdmin;
         })
         .catch(error => {
           console.log( error )
-        });
+        })
     },
 
     deletePost(){
@@ -97,12 +98,12 @@ export default {
       postService.deletePost(postId, postImageUrl)
       .then((res) => {
         this.post = res.data[0];
-        console.log("L'article a été supprimé !", res);
-        this.$router.push('/post');
+        this.message = "La publication a été supprimé !";
+        setTimeout( () => this.$router.push({ path: '/post'}), 2500);
       })
       .catch(error => {
           console.log( error )
-      });
+      })
     },
 
     dateFormat(date){
@@ -115,6 +116,9 @@ export default {
 </script>
 
 <style scoped>
+#posts-btn {
+  max-width: 200px;
+}
 .one-post {
   background-color: #36393f;
   height: 100%;
@@ -138,7 +142,7 @@ export default {
   border-top: 1px solid #FD2D01;
   border-bottom: 1px solid #FD2D01;
 }
-.card-content {
+.card-content, .h4 {
   color: #ffffff;
 }
 .title, .content {
