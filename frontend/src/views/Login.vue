@@ -51,14 +51,15 @@ export default {
 
             axios.post("http://localhost:3000/api/user/login", {
                 email,
-                password
+                password,
             })
             .then((res) => {
-              localStorage.setItem('userToken', res.data.token);   // On garde dans le Local Storage
+              localStorage.setItem('userToken', res.data.token),   // On garde dans le Local Storage
               this.$router.push('/post');
               location.reload();
             })
             .catch((e) => {
+              console.log(e);
               if (e.response.status === 401) {
               this.message = "E-mail ou mot de passe incorrect";
               }

@@ -8,6 +8,7 @@
       <router-link :to="{name:'NewPost'}" id="newpost" class="navbar-brand nav-button" tag="button" title="Créer une publication">Créer une publication</router-link>
       <router-link :to="{name:'UserProfile', params: { id: sessionUserId }}" id="user-profile" class="navbar-brand nav-button" tag="button" title="Voir ou modifier mon compte">Mon compte</router-link>
       <button v-on:click="deconnecter()" class="navbar-brand nav-button" href="#" title="Se déconnecter">Se déconnecter</button>
+      <div class="text-right font-italic admin" v-if="adminUser === 1">moderateur</div>    
     </v-card>
   </div>
 </template>
@@ -25,7 +26,7 @@ export default {
   
   data() {
     return {
-      user: []
+      user: [],
     }
   },
 
@@ -46,11 +47,9 @@ export default {
   },
 
   methods: {
-
     getOneUser(){
     let userId = sessionUserId;
     let adminAcces = adminAcces;
-    console.log("userId getOneUser", userId);
     authUser.getOneUser(userId)
       .then(res => {
         console.log("user data", res.data[0]);
@@ -79,5 +78,8 @@ export default {
 .nav-button:hover, .nav-button:focus {
   color: #FFD7D7;
   text-decoration: underline;
+}
+.admin {
+  color: #FFFFFF;
 }
 </style>

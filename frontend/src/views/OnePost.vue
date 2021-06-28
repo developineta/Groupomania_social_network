@@ -14,14 +14,14 @@
               <div class="row user-link-container p-2">
                 
                 <div v-if="post.postAuthorImageUrl == '/images/imageDefault.png'">
-                    <img class="user-picture mx-auto ml-5 card-img" :src="'http://localhost:3000/images/imageDefault.png'" :alt="post.postAuthorFirstName" title="L'image d'utilisateur" />
+                    <img class="user-picture mx-auto m-auto card-img" :src="'http://localhost:3000/images/imageDefault.png'" :alt="post.postAuthorFirstName" title="L'image d'utilisateur" />
                 </div>
                 
                 <div v-else>
-                  <img class="user-picture mx-auto ml-5 card-img" :src="post.postAuthorImageUrl" :alt="post.postAuthorFirstName" title="L'image d'utilisateur"/>
+                  <img class="user-picture mx-auto m-auto card-img" :src="post.postAuthorImageUrl" :alt="post.postAuthorFirstName" title="L'image d'utilisateur"/>
                 </div>
                 
-                <div class="h6 mt-7 ml-8">Publié par {{post.postAuthorFirstName}} {{post.postAuthorLastName}}</div>
+                <div class="h6 m-auto">Publié par {{post.postAuthorFirstName}} {{post.postAuthorLastName}}</div>
               </div>
             
             </router-link>
@@ -33,7 +33,7 @@
             
             <div class="content p-4">{{post.postContent}}</div>
 
-            <small class="font-italic date pl-2 mt-6">Publié le {{dateFormat(post.postDate)}}</small>
+            <small class="font-italic date pl-2 my-6">Publié le {{dateFormat(post.postDate)}}</small>
 
             <v-divider v-if="sessionUserId === id || adminUser === 1" horizontal style="border: 1px solid #FEFEFE"></v-divider>
 

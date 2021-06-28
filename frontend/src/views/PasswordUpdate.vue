@@ -6,11 +6,11 @@
         <form class="jumbotron py-6" @submit.prevent="update_password()">
           <div class="mb-5 mt-8 mx-auto text-h6">
                           
-            <input class="form-control mb-4" ref="newpassword" type="password" minLength="8" v-model.trim="password" :class="{error: validation.hasError('password'), valid: validation.isTouched('password') && !validation.hasError('password')}" title="Saisissez le nouveau mot de passe" placeholder="Mon nouveau mot de passe">
-            <div class="error" v-if="validation.hasError('password')">{{ passwordError }}</div>
+            <input class="form-control mb-4" id="newpassword" type="password" minLength="8" v-model.trim="password" :class="{error: validation.hasError('password'), valid: validation.isTouched('password') && !validation.hasError('password')}" title="Saisissez le nouveau mot de passe" placeholder="Mon nouveau mot de passe">
+            <div class="error" id="error" v-if="validation.hasError('password')">{{ passwordError }}</div>
             
-            <input class="form-control mb-4" ref="confirmpassword" type="password" v-model.trim="confirmPassword" :class="{error: validation.hasError('confirmPassword'), valid: validation.isTouched('confirmPassword') && !validation.hasError('confirmPassword')}" title="Confirmez le nouveau mot de passe" placeholder="Confirmer mon nouveau mot de passe">
-            <div class="error" v-if="validation.hasError('confirmPassword')">{{ confirmPasswordError }}</div>
+            <input class="form-control mb-4" id="confirmpassword" type="password" v-model.trim="confirmPassword" :class="{error: validation.hasError('confirmPassword'), valid: validation.isTouched('confirmPassword') && !validation.hasError('confirmPassword')}" title="Confirmez le nouveau mot de passe" placeholder="Confirmer mon nouveau mot de passe">
+            <div class="error" id="error-confirm" v-if="validation.hasError('confirmPassword')">{{ confirmPasswordError }}</div>
 
             <div class="btn-profile-page mx-auto mt-6 mb-6">
               <button class="btn btn-secondary" id="modify-password" type="submit" :disabled="validation.countErrors() > 0" title="Modifier le mot de passe">Modifier le mot de passe</button>
@@ -46,7 +46,6 @@ export default {
       user: {},
       passwordError: "Le mot de passe doit contenir au moins 8 caractères, au moins 1 majuscule, au moins 1 minuscule, au moins 1 chiffre et doit être sans les espaces !",
       confirmPasswordError: "Veuillez confirmer le mot de passe !",
-      message: ""
     }
   },
 
@@ -71,19 +70,6 @@ export default {
   },
  
   methods: {
-
-    /*getOneUser(){
-    const userId = this.$route.params.id;
-    authUser.getOneUser(userId)
-      .then(res => {
-        console.log("user data", res.data[0]);
-        this.user = res.data[0];
-        this.id = userId;
-      })
-      .catch((error) => {
-        console.log(error);
-      })
-    },*/
 
     update_password() {
       this.$validate()
@@ -117,32 +103,12 @@ export default {
   background-color: #36393f;
   height: 100%;
 }
-.container {
-  border-top: 1px solid #FD2D01;
-}
-.h4, .required {
+.h4 {
   color: #ffffff;
 }
 .jumbotron {
   background-color: #4f545c;
   border-top: 1px solid #FD2D01;
-}
-.card-content, .h5 {
-  color: #ffffff;
-}
-.user-picture {
-  max-width: 300px;
-  border: 15px solid #D4D4D4;
-  box-shadow: 5px 5px 5px #36393f;
-}
-.card-title, .profile-role {
-  background-color: #36393f;
-  border-radius: 10px;
-}
-.btn-posts {
-  color: #ffffff;
-  border: 1px solid #36393f;
-  box-shadow: 5px 5px 5px #36393f;
 }
 input {
   max-width: 900px;
@@ -160,21 +126,10 @@ input {
   font-weight: bold;
   text-decoration: underline;
 }
-.btn-posts:hover {
-  color: #D4D4D4;
+#newpassword:focus, #confirmpassword:focus {
+  background-color: #ffffff;
 }
-.imageForm {
-  background-color: #4f545c;
-  border-bottom: 1px solid #FD2D01;
-}
-.image-profile {
-  border-radius: 10px;
-  color: #000000;
-  background-color: #FFFFFF;
-}
-.btn-danger {
-background-color: #FD2D01;
-font-weight: bold;
-
+#error, #error-confirm {
+  background-color: #4f545c !important;
 }
 </style>

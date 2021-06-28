@@ -24,9 +24,6 @@
 <script>
 import postService from "../services/postService";
 import Header from "../components/Header.vue";
-import dayjs from "dayjs";
-import customParseFormat from "dayjs/plugin/customParseFormat";
-dayjs.extend(customParseFormat)
 
 export default {
     name: "AllPosts",

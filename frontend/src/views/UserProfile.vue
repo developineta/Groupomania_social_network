@@ -40,14 +40,14 @@
             <div class="mb-5 mt-8 mx-auto text-h6">
               
               <span class="h5 pb-1">Modifier les informations :</span>
-              <input class="form-control mb-4" ref="firstName" type="text" v-model.trim="firstName" :class="{error: validation.hasError('firstName'), valid: validation.isTouched('firstName') && !validation.hasError('firstName')}" title="Modifier votre prénom">
-              <div class="error" v-if="validation.hasError('firstName')">{{ nameError }}</div>
+              <input class="form-control mb-4" id="firstName" type="text" v-model.trim="firstName" :class="{error: validation.hasError('firstName'), valid: validation.isTouched('firstName') && !validation.hasError('firstName')}" :placeholder="user.firstName" title="Modifier votre prénom">
+              <div class="error" id="error" v-if="validation.hasError('firstName')">{{ nameError }}</div>
               
-              <input class="form-control mb-4" ref="lastName" type="text" v-model.trim="lastName" :class="{error: validation.hasError('lastName'), valid: validation.isTouched('lastName') && !validation.hasError('lastName')}" title="Modifier votre nom">
-              <div class="error" v-if="validation.hasError('firstName')">{{ nameError }}</div>
+              <input class="form-control mb-4" id="lastName" type="text" v-model.trim="lastName" :class="{error: validation.hasError('lastName'), valid: validation.isTouched('lastName') && !validation.hasError('lastName')}" :placeholder="user.lastName" title="Modifier votre nom">
+              <div class="error" id="error-ln" v-if="validation.hasError('firstName')">{{ nameError }}</div>
               
-              <input class="form-control mb-4" ref="role" type="text" v-model.trim="role" :class="{error: validation.hasError('role'), valid: validation.isTouched('role') && !validation.hasError('role')}" title="Modifier votre rôle chez Groupomania">
-              <div class="error" v-if="validation.hasError('role')">{{ nameError }}</div>
+              <input class="form-control mb-4" id="role" type="text" v-model.trim="role" :class="{error: validation.hasError('role'), valid: validation.isTouched('role') && !validation.hasError('role')}" :placeholder="user.role" title="Modifier votre rôle chez Groupomania">
+              <div class="error" id="error-rl" v-if="validation.hasError('role')">{{ roleError }}</div>
 
               <div class="btn-profile-page mx-auto mt-6 mb-6">
                 <button class="btn btn-secondary" id="modify-infos" type="submit" :disabled="validation.countErrors() > 0" title="Modifier les informations">Modifier le profil</button>
@@ -58,27 +58,29 @@
           <v-divider v-if="sessionUserId == id" horizontal></v-divider>
 
           <router-link :to="`/user/${ id }/update_password`" class="user-link pl-2 mb-0" tag="button">
-            <button type="link" class="btn btn-secondary mx-5 px-5" title="Modifier le mot de passe">Modifier le mot de passe</button>
+            <button type="link" class="btn btn-secondary btn-password mr-5 px-5" title="Modifier le mot de passe">Modifier le mot de passe</button>
           </router-link>
 
           <v-divider v-if="sessionUserId == id" horizontal></v-divider>
 
-          <User v-if="Object.keys(user).length" :user="user"/>
-
           <form class="imageForm py-8 pl-8">
             <div class="h5 pb-1">Ajouter l'image de profil :</div>
             <input class="image-profile" type="file" name="image" ref="file" v-on:change="setImage">
+
+            <div id="preview">
+              <img class="img-preview mt-1" v-if="url" :src="url" />
+            </div>
+
             <div class="btn-upload mx-auto mt-6 mb-6">
               <button type="submit" class="btn btn-secondary mx-5 px-5" v-on:click.prevent="update_image" title="Publier l'image">Publier l'image</button>
             </div>
           </form>
 
-          <div class="error-message text-center">{{ deleteErrorMessage }}</div>
-          <div class="success-message text-center">{{ deleteSuccessMessage }}</div>
-          <div class="mx-auto my-8 button-delete text-right">
+          <div class="success-message text-center">{{ deleteMessage }}</div>
+          <div class="mx-auto mt-8 button-delete text-right">
             <button class="btn btn-danger mx-5" id="delete-profile" type="button" v-on:click.prevent="deleteUser()" title="Supprimer le compte définitivement">Supprimer le compte</button>
           </div>
-          
+          <User v-if="Object.keys(user).length" :user="user"/>
         </div>
       </div>
     </div>
@@ -102,7 +104,6 @@ export default {
     return{
       titleMy: "Mon profil",
       titleUser: "Profil d'utilisateur",
-      //user: [],
       id: "",
       image: "",
       firstName: "",
@@ -110,11 +111,10 @@ export default {
       role: "",
       email: "",
       user: {},
-      nameError: "Le nom et prénom doivent contenir au moins 3 caractères et contenir que de lettres et les espaces",
-      roleError: "Votre rôle doit contenir au moins 3 caractères et contenir que de lettres et les espaces",
-      deleteErrorMessage: "",
-      deleteSuccessMessage: "",
-      message: ""
+      url: null,
+      nameError: "Le nom et prénom doivent contenir 3 au 20 caractères et contenir que de lettres et les espaces",
+      roleError: "Votre rôle doit contenir 3 au 60 caractères et avoir que de lettres et les espaces",
+      deleteMessage: "",
     }
   },
 
@@ -128,13 +128,13 @@ export default {
   },
   validators: {
     firstName(value) {
-      return Validator.value(value).required().minLength(3).regex('^[A-Za-z]*$');
+      return Validator.value(value).required().minLength(3).maxLength(20).regex('^[A-Za-zÀ-ÿ ]+$');
     },
     lastName(value) {
-      return Validator.value(value).required().minLength(3).regex('^[A-Za-z]*$');
+      return Validator.value(value).required().minLength(3).maxLength(20).regex('^[A-Za-zÀ-ÿ ]+$');
     },
     role(value) {
-      return Validator.value(value).minLength(3).regex('^[A-Za-z]*$');
+      return Validator.value(value).minLength(3).maxLength(60).regex('^[A-Za-zÀ-ÿ ]+$');
     }
   },
  
@@ -200,7 +200,8 @@ export default {
 
     setImage() {
       this.file = this.$refs.file.files[0];
-      console.log(this.file)
+      console.log(this.file);
+      this.url = URL.createObjectURL(this.file);
     },
 
     deleteUser(){
@@ -285,9 +286,27 @@ input {
   color: #000000;
   background-color: #FFFFFF;
 }
+.btn-password {
+  background-color: #4f545c;
+}
+.btn-password:hover, .btn-password:focus {
+  background-color: #4f545c;
+}
 .btn-danger {
-background-color: #FD2D01;
-font-weight: bold;
-
+  background-color: #FD2D01;
+  font-weight: bold;
+}
+.btn-danger:hover, .btn-danger:focus {
+  text-decoration: underline;
+}
+#firstName:focus, #lastName:focus, #role:focus {
+  background-color: #ffffff;
+}
+#error, #error-ln, #error-rl {
+  background-color: #4f545c;
+}
+.img-preview {
+  max-width: 150px;
+  border: 2px solid #D4D4D4;
 }
 </style>

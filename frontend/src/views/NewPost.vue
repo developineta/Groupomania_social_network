@@ -14,6 +14,10 @@
           <textarea name="content" v-model="content" class="input form-control mb-4 pt-5 pb-0" placeholder="Le contenu de votre publication *" title="Saisissez le contenu de votre publication" required></textarea> <br>
         
           <input class="image-post" type="file" name="image" ref="file" v-on:change="setImage"> <br>
+
+          <div id="preview">
+            <img class="img-preview mt-1" v-if="url" :src="url" />
+          </div>
         </div>
 
         <div class="btn-newpost mx-auto mt-6 mb-6">
@@ -43,6 +47,7 @@ export default {
       title: "",
       content: "",
       file: "",
+      url: null,
       message: ""
     }
   },
@@ -63,7 +68,7 @@ export default {
       postService.createPost(postData)
       .then(res => {
         if (res) {
-            window.location.reload()
+            window.location.reload();
         }
       })
       .catch(error => {
@@ -73,7 +78,8 @@ export default {
 
     setImage() {
       this.file = this.$refs.file.files[0];
-      console.log(this.file)
+      console.log(this.file);
+      this.url = URL.createObjectURL(this.file);
     }
   }
 }
@@ -116,5 +122,9 @@ export default {
   background-color: #36393f;
   color: #FD2D01;
   font-weight: bold;
+}
+.img-preview {
+  max-width: 150px;
+  border: 2px solid #D4D4D4;
 }
 </style>
