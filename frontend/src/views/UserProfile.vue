@@ -3,8 +3,8 @@
       <Header />
 
       <div class="container d-flex flex-column">
-          <p v-if="sessionUserId != id" class="h4 mt-5 mb-2 text-center text-uppercase">{{titleUser}}</p>
-          <p v-if="sessionUserId == id" class="h4 mt-5 mb-2 text-center text-uppercase">{{titleMy}}</p>
+          <h2 v-if="sessionUserId != id" class="h4 mt-5 mb-2 text-center text-uppercase">{{titleUser}}</h2>
+          <h2 v-if="sessionUserId == id" class="h4 mt-5 mb-2 text-center text-uppercase">{{titleMy}}</h2>
 
           <v-card class="jumbotron mx-auto mt-3 mb-8 pb-2 pt-5 text-center" elevation="24" width="600">
             <v-list-item three-line class="px-0 py-0">
@@ -39,13 +39,16 @@
 
             <div class="mb-5 mt-8 mx-auto text-h6">
               
-              <span class="h5 pb-1">Modifier les informations :</span>
+              <h3 class="h5 pb-1">Modifier les informations :</h3>
+              <label for="firstName" class="h6">Prénom</label>
               <input class="form-control mb-4" id="firstName" type="text" v-model.trim="firstName" :class="{error: validation.hasError('firstName'), valid: validation.isTouched('firstName') && !validation.hasError('firstName')}" :placeholder="user.firstName" title="Modifier votre prénom">
               <div class="error" id="error" v-if="validation.hasError('firstName')">{{ nameError }}</div>
               
+              <label for="lastName" class="h6">Nom</label>
               <input class="form-control mb-4" id="lastName" type="text" v-model.trim="lastName" :class="{error: validation.hasError('lastName'), valid: validation.isTouched('lastName') && !validation.hasError('lastName')}" :placeholder="user.lastName" title="Modifier votre nom">
               <div class="error" id="error-ln" v-if="validation.hasError('firstName')">{{ nameError }}</div>
               
+              <label for="role" class="h6">Votre rôle</label>
               <input class="form-control mb-4" id="role" type="text" v-model.trim="role" :class="{error: validation.hasError('role'), valid: validation.isTouched('role') && !validation.hasError('role')}" :placeholder="user.role" title="Modifier votre rôle chez Groupomania">
               <div class="error" id="error-rl" v-if="validation.hasError('role')">{{ roleError }}</div>
 
@@ -59,27 +62,28 @@
           <v-divider v-if="sessionUserId == id" horizontal></v-divider>
 
           <router-link :to="`/user/${ id }/update_password`" class="user-link pl-2 mb-0" tag="button">
-            <button type="link" class="btn btn-secondary btn-password mr-5 px-5" title="Modifier le mot de passe">Modifier le mot de passe</button>
+            <button type="link" class="btn btn-secondary btn-password mr-5 px-5" title="Modification de mot de passe">Modifier le mot de passe</button>
           </router-link>
 
           <v-divider v-if="sessionUserId == id" horizontal></v-divider>
 
           <form class="imageForm py-8 pl-8">
-            <div class="h5 pb-1">Ajouter l'image de profil :</div>
-            <input class="image-profile" type="file" name="image" ref="file" v-on:change="setImage">
+            <div class="h5 pb-1">Ajouter l'image de profil</div>
+            <label for="file" class="h6 mr-2">Image :</label>
+            <input class="image-profile" type="file" name="image" ref="file" id="file" v-on:change="setImage">
 
             <div id="preview">
-              <img class="img-preview mt-1" v-if="url" :src="url" />
+              <img class="img-preview mt-1" v-if="url" :src="url" title="Apperçu de l'image" alt="Apperçu de l'image de profil" />
             </div>
 
             <div class="btn-upload mx-auto mt-6 mb-6">
-              <button type="submit" class="btn btn-secondary mx-5 px-5" v-on:click.prevent="update_image" title="Publier l'image">Publier l'image</button>
+              <button type="submit" class="btn btn-secondary mx-5 px-5" v-on:click.prevent="update_image" title="Publication d'image">Publier l'image</button>
             </div>
           </form>
 
           <div class="message h4 text-center mt-3">{{ deleteMessage }}</div>
           <div class="mx-auto mt-8 button-delete text-right">
-            <button class="btn btn-danger mx-5" id="delete-profile" type="button" v-on:click.prevent="deleteUser()" title="Supprimer le compte définitivement">Supprimer le compte</button>
+            <button class="btn btn-danger mx-5" id="delete-profile" type="button" v-on:click.prevent="deleteUser()" title="Supprimer votre compte définitivement">Supprimer le compte</button>
           </div>
           <User v-if="Object.keys(user).length" :user="user"/>
         </div>
@@ -250,7 +254,7 @@ export default {
   background-color: #4f545c;
   border-top: 1px solid #FD2D01;
 }
-.card-content, .h5 {
+.card-content, .h5, label {
   color: #ffffff;
 }
 .user-picture {

@@ -3,29 +3,32 @@
     <Header />
 
     <div class="container p-5">
-      <p class="h4 mb-4 text-center">{{pageTitle}}</p>
+      <h2 class="h4 mb-4 text-center">{{pageTitle}}</h2>
       
       <form class="jumbotron py-6 formCreate" @submit.prevent="createPost">
         <div class="required mb-2 text-center">Les champs requis *</div>
         
         <div class="post-inputs">
-          <textarea name="title" v-model="title" class="input form-control mb-4 pt-5 pb-0" placeholder="Le titre de votre publication *" title="Saisissez le titre de votre publication" required></textarea>
-        
-          <textarea name="content" v-model="content" class="input form-control mb-4 pt-5 pb-0" placeholder="Le contenu de votre publication *" title="Saisissez le contenu de votre publication" required></textarea>
+          <label for="title">Le titre</label>
+          <textarea name="title" v-model="title" class="input form-control mb-4 pt-5 pb-0" id="title" placeholder="Le titre de votre publication *" title="Saisissez le titre de votre publication" required></textarea>
+
+          <label for="content">Le contenu</label>
+          <textarea name="content" v-model="content" class="input form-control mb-4 pt-5 pb-0" id="content" placeholder="Le contenu de votre publication *" title="Saisissez le contenu de votre publication" required></textarea>
 
           <div class="col">
-            <input class="image-post row mt-2" type="file" name="image" ref="file" v-on:change="setImage">
+            <label for="file">Ajouter une image</label>
+            <input class="image-post row mt-2" type="file" name="image" id="file" ref="file" v-on:change="setImage">
             <div class="font-italic text-p row py-2">Les fichiers acceptés: JPG, JPEG, PNG, GIF</div>
 
             <div id="preview">
-              <img class="img-preview mt-1" v-if="url" :src="url" />
+              <img class="img-preview mt-1" v-if="url" :src="url" title="Apperçu de l'image" alt="Apperçu de l'image de publication" />
             </div>
           </div>
 
         </div>
 
         <div class="btn-newpost mx-auto mt-6 mb-6">
-          <button type="submit" class="btn btn-secondary mx-5 px-5" title="Publier">Publier</button>
+          <button type="submit" class="btn btn-secondary mx-5 px-5" title="Ajouter la publication">Publier</button>
         </div>
         <div class="message h4 text-center mt-8">{{ message }}</div>
 
@@ -98,7 +101,7 @@ export default {
 .container {
   border-top: 1px solid #FD2D01;
 }
-.h4, .required, .text-p {
+.h4, .required, .text-p, label {
   color: #ffffff;
 }
 .jumbotron {

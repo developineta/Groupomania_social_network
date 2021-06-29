@@ -2,18 +2,20 @@
     <div class="user-profile">
       <Header />
   
-        <p v-if="sessionUserId != id" class="h4 mt-5 mb-2 text-center text-uppercase">{{titlePassword}}</p>
+        <h2 v-if="sessionUserId != id" class="h4 mt-5 mb-2 text-center text-uppercase">{{titlePassword}}</h2>
         <form class="jumbotron py-6" @submit.prevent="update_password()">
           <div class="mb-5 mt-8 mx-auto text-h6">
-                          
+
+            <label for="newpassword" class="h6">Votre nouveau mot de passe</label>              
             <input class="form-control mb-4" id="newpassword" type="password" minLength="8" v-model.trim="password" :class="{error: validation.hasError('password'), valid: validation.isTouched('password') && !validation.hasError('password')}" title="Saisissez le nouveau mot de passe" placeholder="Mon nouveau mot de passe">
             <div class="error" id="error" v-if="validation.hasError('password')">{{ passwordError }}</div>
             
+            <label for="confirmpassword" class="h6">Confirmez votre nouveau mot de passe</label>
             <input class="form-control mb-4" id="confirmpassword" type="password" v-model.trim="confirmPassword" :class="{error: validation.hasError('confirmPassword'), valid: validation.isTouched('confirmPassword') && !validation.hasError('confirmPassword')}" title="Confirmez le nouveau mot de passe" placeholder="Confirmer mon nouveau mot de passe">
             <div class="error" id="error-confirm" v-if="validation.hasError('confirmPassword')">{{ confirmPasswordError }}</div>
 
             <div class="btn-profile-page mx-auto mt-6 mb-6">
-              <button class="btn btn-secondary" id="modify-password" type="submit" :disabled="validation.countErrors() > 0" title="Modifier le mot de passe">Modifier le mot de passe</button>
+              <button class="btn btn-secondary" id="modify-password" type="submit" :disabled="validation.countErrors() > 0" title="Modification de mot de passe">Modifier le mot de passe</button>
             </div>
             <div class="message h4 text-center mt-8">{{ message }}</div>
 
@@ -101,7 +103,7 @@ export default {
   background-color: #36393f;
   height: 100%;
 }
-.h4 {
+.h4, label {
   color: #ffffff;
 }
 .jumbotron {

@@ -6,13 +6,13 @@
 
     <v-card class="navbar d-flex col row-md" :color="'#4f545c'" min-height='50' tile>
 
-      <router-link :to="{name:'AllPosts'}" id="allposts" class="navbar-brand nav-button" tag="button" title="Voir toutes les publications">Les publications</router-link>
+      <router-link :to="{name:'AllPosts'}" id="allposts" class="navbar-brand nav-button" tag="button" title="Voir les publications">Les publications</router-link>
 
-      <router-link :to="{name:'NewPost'}" id="newpost" class="navbar-brand nav-button" tag="button" title="Créer une publication">Créer une publication</router-link>
+      <router-link :to="{name:'NewPost'}" id="newpost" class="navbar-brand nav-button" tag="button" title="Créez une publication">Créer une publication</router-link>
 
       <router-link :to="{name:'UserProfile', params: { id: sessionUserId }}" id="user-profile" class="navbar-brand nav-button" tag="button" title="Voir ou modifier mon compte">Mon compte</router-link>
       
-      <button v-on:click="deconnecter()" class="navbar-brand nav-button" href="#" title="Se déconnecter">Se déconnecter</button>
+      <button v-on:click="deconnecter()" class="navbar-brand nav-button" href="#" title="Déconnexion">Se déconnecter</button>
 
       <div class="text-right font-italic admin" v-if="adminUser === 1">moderateur</div>    
       

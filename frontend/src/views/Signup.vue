@@ -4,30 +4,35 @@
       <img class="img-fluid logo-main" alt="Groupomania logo" src="../assets/logo-left.jpg" />
     </h1>
     <div class="container p-5">
-      <p class="h4 mb-4 text-center">{{title}}</p>
+      <h2 class="h4 mb-4 text-center">{{title}}</h2>
       <form class="jumbotron py-6" @submit.prevent="signup()">
         <div class="required mb-2 text-center">Les champs requis *</div>
         <div class="signup-inputs">
-
+          
+          <label for="firstName">Prénom</label>
           <input id="firstName" class="form-control mb-4" v-model.trim="firstName" :class="{error: validation.hasError('firstName'), valid: validation.isTouched('firstName') && !validation.hasError('firstName')}" placeholder="Prénom *" title="Saisissez votre prénom" />
           <div class="error" v-if="validation.hasError('firstName')">{{ nameError }}</div>
           
+          <label for="lastName">Nom</label>
           <input id="lastName" class="form-control mb-4" v-model.trim="lastName" :class="{error: validation.hasError('lastName'), valid: validation.isTouched('lastName') && !validation.hasError('lastName')}" placeholder="Nom *"  title="Saisissez votre nom de famille" />
           <div class="error" v-if="validation.hasError('lastName')">{{ nameError }}</div>
 
+          <label for="email">E-mail</label>
           <input id="email" class="form-control mb-4" v-model.trim="email" :class="{error: validation.hasError('email'), valid: validation.isTouched('email') && !validation.hasError('email')}" placeholder="E-mail *" title="Saisissez votre adresse e-mail" />
           <div class="error" v-if="validation.hasError('email')">{{ emailError }}</div>
 
+          <label for="password">Mot de passe</label>
           <input id="password" class="form-control mb-4" type="password" minLength="8" v-model.trim="password" :class="{error: validation.hasError('password'), valid: validation.isTouched('password') && !validation.hasError('password')}" placeholder="Mot de passe *" title="Saisissez un mot de passe" />
           <div class="error" v-if="validation.hasError('password')">{{ passwordError }}</div>
 
+          <label for="confirmPassword">Confirmer le mot de passe</label>
           <input id="confirmPassword" class="form-control mb-4" type="password" v-model.trim="confirmPassword" :class="{error: validation.hasError('confirmPassword'), valid: validation.isTouched('confirmPassword') && !validation.hasError('confirmPassword')}" placeholder="Confirmer mot de passe *" title="Confirmez votre mot de passe" />
           <div class="error" v-if="validation.hasError('confirmPassword')">{{ confirmPasswordError }}</div>
         
         </div>
         <div class="error-msg">{{ message }}</div>
         <div class="btn-signup-page mx-auto mt-6 mb-6">
-          <button class="btn btn-secondary mx-5" id="signup" :disabled="validation.countErrors() > 0" type="submit" title="S'inscrire">S'inscrire</button>
+          <button class="btn btn-secondary mx-5" id="signup" :disabled="validation.countErrors() > 0" type="submit" title="Inscription">S'inscrire</button>
         </div>
       </form>
       <User v-if="Object.keys(user).length" :user="user"/>
@@ -141,7 +146,7 @@ export default {
 .container {
   border-top: 1px solid #FD2D01;
 }
-.h4, .required {
+.h4, .required, label {
   color: #ffffff;
 }
 .jumbotron {

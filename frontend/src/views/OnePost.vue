@@ -40,7 +40,7 @@
 
             <v-divider v-if="sessionUserId === id || adminUser === 1" horizontal style="border: 1px solid #FEFEFE"></v-divider>
 
-            <button v-if="sessionUserId === id || adminUser === 1" v-on:click="deletePost()" class="delete btn btn-secondary m-auto" title="Supprimer la publication">Supprimer la publication</button>
+            <button v-if="sessionUserId === id || adminUser === 1" v-on:click="deletePost()" class="delete btn btn-secondary m-auto" title="Supprimer cette publication">Supprimer la publication</button>
             
           </v-list-item-content>
         </v-list-item>

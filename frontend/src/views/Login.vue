@@ -5,19 +5,21 @@
         </h1>
         <div class="container p-5">
           
-            <p class="h4 mb-4 text-center">{{title}}</p>
+            <h2 class="h4 mb-4 text-center">{{title}}</h2>
             <form class="jumbotron py-6" @submit.prevent>
 
               <div class="sentence mb-2 text-center">Les champs sont requis</div>
 
-              <input class="form-control mb-4" type="email" v-model="email" placeholder="E-mail" title="Renseignez votre e-mail" required>
+              <label for="email">E-mail</label>
+              <input class="form-control mb-4" type="email" id="email" v-model="email" placeholder="E-mail" title="Renseignez votre e-mail" required>
 
-              <input class="form-control mb-4" type="password" v-model="password" placeholder="Mot de passe" title="Renseignez votre mot de passe" required>
+              <label for="password">Mot de passe</label>
+              <input class="form-control mb-4" type="password" id="password" v-model="password" placeholder="Mot de passe" title="Renseignez votre mot de passe" required>
 
               <div class="error-msg">{{ message }}</div>
 
               <div class="btn-login-page mx-auto mt-6 mb-6 text-center">
-                <button class="btn btn-secondary mx-5" @click="login" type="submit" title="Se connecter">Se Connecter</button>
+                <button class="btn btn-secondary mx-5" @click="login" type="submit" title="Connexion">Se Connecter</button>
               </div>
 
               <div class="text-center">
@@ -85,7 +87,7 @@ export default {
 .container {
   border-top: 1px solid #FD2D01;
 }
-.h4, .sentence {
+.h4, .sentence, label {
   color: #ffffff;
 }
 .jumbotron {
