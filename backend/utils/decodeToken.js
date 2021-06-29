@@ -1,3 +1,5 @@
+// Récuperation de l'Id de l'utilisateur connecté pour le reconnaître sur les routes de publications (post)
+
 require('dotenv').config();
 const jwt = require("jsonwebtoken");
 

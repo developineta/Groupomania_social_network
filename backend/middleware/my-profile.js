@@ -1,4 +1,4 @@
-const mysql = require('../msqlConnect').connection;
+// Middleware qui vérifie si l'utilisateur connecté correspond au profil d'utilisateur qui est consulté
 
 const decodeToken = require('../utils/decodeToken');
 
@@ -7,14 +7,11 @@ module.exports = (req, res, next) => {
     let tokenData = decodeToken(req);
     let authorId = tokenData[0];
     const userId = req.params.id
-    console.log("Profil user consulté", req.params.id);
-    console.log("Profil user connecté", userId);
 
-    if(userId == authorId){
-        console.log("C'est votre profil d'utilisateur !");
+    if(userId == authorId){                 // Si l'id correspond, l'action peut être faite (les modifications sur le profil d'utilisateur)
         next();
         
     }else{
-        return res.status(401).json("Ce n'est pas votre profil d'utilisateur !!");
+        return res.status(401).json();
     }
 };

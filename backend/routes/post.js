@@ -7,9 +7,9 @@ const multer = require('../middleware/multer-config');  // Définition de 'multe
 const adminPost = require('../middleware/admin-post');  // Middleware de vérification si le user est un admin ou pas
 
 // Les routes de publications disponibles
-router.post('/', auth, multer, postCtrl.createPost); // remettre auth
-router.delete('/:id', auth, adminPost, postCtrl.deletePost); // remettre auth
-router.get('/:id', auth, postCtrl.getOnePost); // remettre auth
-router.get('/', auth, postCtrl.getAllPosts); // remettre auth
+router.post('/', auth, multer, postCtrl.createPost);
+router.delete('/:id', auth, adminPost, postCtrl.deletePost);
+router.get('/:id', auth, postCtrl.getOnePost);
+router.get('/', auth, postCtrl.getAllPosts);
 
 module.exports = router;                    // Exportation du router

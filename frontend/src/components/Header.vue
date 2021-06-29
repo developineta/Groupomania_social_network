@@ -3,12 +3,19 @@
     <h1 class="text-center">
       <img class="img-fluid logo-main" alt="Groupomania logo" src="../assets/logo-left.jpg" />
     </h1>
+
     <v-card class="navbar d-flex col row-md" :color="'#4f545c'" min-height='50' tile>
+
       <router-link :to="{name:'AllPosts'}" id="allposts" class="navbar-brand nav-button" tag="button" title="Voir toutes les publications">Les publications</router-link>
+
       <router-link :to="{name:'NewPost'}" id="newpost" class="navbar-brand nav-button" tag="button" title="Créer une publication">Créer une publication</router-link>
+
       <router-link :to="{name:'UserProfile', params: { id: sessionUserId }}" id="user-profile" class="navbar-brand nav-button" tag="button" title="Voir ou modifier mon compte">Mon compte</router-link>
+      
       <button v-on:click="deconnecter()" class="navbar-brand nav-button" href="#" title="Se déconnecter">Se déconnecter</button>
+
       <div class="text-right font-italic admin" v-if="adminUser === 1">moderateur</div>    
+      
     </v-card>
   </div>
 </template>
@@ -48,7 +55,7 @@ export default {
 
   methods: {
     getOneUser(){
-    let userId = sessionUserId;
+    let userId = this.sessionUserId;
     let adminAcces = adminAcces;
     authUser.getOneUser(userId)
       .then(res => {

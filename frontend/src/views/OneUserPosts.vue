@@ -22,7 +22,7 @@
         </v-list-item>
       </v-card>
       <div v-if="posts.length === 0" class="mx-auto mt-5 mb-10" elevation="24" width="600">
-        <div class="my-15 mx-auto text-h4 text-center">Oups.. il n'y a pas de publications...</div>
+        <div class="my-15 mx-auto h4 text-center">Oups.. il n'y a pas de publications...</div>
       </div>
       
       <v-card class="card mx-auto my-5" v-for = "post in posts" :key="post.postId" elevation="24" width="600">
@@ -78,16 +78,23 @@ export default {
       .then(res => {
         this.user = res.data[0]
       })
+      .catch((error) => {
+        console.log(error);
+      })
       authService.oneUserPosts(userId)
       .then(res => {
         this.posts = res.data;
       })
+      .catch((error) => {
+        console.log(error);
+          this.message = "La modification a échoué !";
+      })
     },
     
     dateFormat(date){
-        const event = new Date(date);
-        const data = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' };
-        return event.toLocaleDateString('fr-FR', data);
+      const event = new Date(date);
+      const data = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' };
+      return event.toLocaleDateString('fr-FR', data);
     }
   }
 }
@@ -101,26 +108,17 @@ export default {
 .container {
   border-top: 1px solid #FD2D01;
 }
-.user-card {
-  background-color: #4f545c;
-  border-top: 1px solid #FD2D01;
-  border-bottom: 1px solid #FD2D01;
-}
 .user-picture {
   max-width: 100px;
   border: 5px solid #D4D4D4;
   box-shadow: 5px 5px 5px #36393f;
 }
-.user-title {
-  color: #ffffff;
-  background-color: #36393f;
-}
-.card {
+.card, .user-card {
   background-color: #4f545c;
   border-top: 1px solid #FD2D01;
   border-bottom: 1px solid #FD2D01;
 }
-.title, .content, .date {
+.title, .content, .date, .user-title, .h4 {
   color: #ffffff;
   background-color: #36393f;
 }

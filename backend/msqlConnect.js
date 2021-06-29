@@ -1,3 +1,5 @@
+// La connexion à la base de données MySQL
+
 const mysql = require('mysql');
 
 exports.connection = mysql.createPool({

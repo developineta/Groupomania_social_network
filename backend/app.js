@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');  // Importer le paquet Body-parser (t
 const path = require('path');               // Pour avoir l'accèss au système de fichiers
 
 const postRoutes = require('./routes/post'); // L'importation du router de posts
-const userRoutes = require('./routes/user');    // L'importation du router de user
+const userRoutes = require('./routes/user'); // L'importation du router de user
 
 const app = express();                      // Création de l'application Express
 
@@ -20,7 +20,7 @@ app.use(bodyParser.json());                 // Accès au corps de la requête
 
 app.use('/images', express.static(path.join(__dirname, 'images'))); // Gestionnaire de routage pour servir le dossier 'images' lors d'une requête concernée
 
-app.use('/api/post', postRoutes);       // La route API pour laquelle on utilise routeur indiqué
+app.use('/api/post', postRoutes);           // La route API pour laquelle on utilise routeur indiqué
 app.use('/api/user', userRoutes);
 
 module.exports = app;                       // L'exportation de l'application

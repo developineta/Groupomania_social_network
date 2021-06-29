@@ -8,7 +8,7 @@
       </div>
       <div class="message h4 text-center">{{ message }}</div>
       <router-link v-if="post == 0" :to="{name:'AllPosts'}" id="posts-btn" class="btn btn-secondary m-auto" tag="button" title="Voir les publications">Rétour aux publications</router-link>
-
+      
       <v-card v-if="post" class="card mx-auto mt-5" :key="post.postId" elevation="24" width="600">
         <v-list-item five-line class="p-0">
           <v-list-item-content class="card-content p-0">
@@ -98,7 +98,7 @@ export default {
       postService.deletePost(postId, postImageUrl)
       .then((res) => {
         this.post = res.data[0];
-        this.message = "La publication a été supprimé !";
+        this.message = res.data.message;
         setTimeout( () => this.$router.push({ path: '/post'}), 2500);
       })
       .catch(error => {

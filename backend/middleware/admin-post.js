@@ -1,6 +1,7 @@
+// Middleware qui vérifie si l'utilisateur connecté est admin ou l'autheur de la publication pour avoir les droits de supprimer la publication
+
 require('dotenv').config();
 const mysql = require('../msqlConnect').connection;
-
 const decodeToken = require('../utils/decodeToken');
 
 module.exports = (req, res, next) => {
@@ -12,17 +13,12 @@ module.exports = (req, res, next) => {
         if (err) {
             return res.status(500).json(err.message);
         }
-
-        if(result[0].admin){
-            console.log("Vous êtes admin");
+        if(result[0].admin){                        // Si l'utilissateur est admin, on procède l'action (la suppression de la publication)
             next();
         }else{
-            console.log("Vous n'êtes pas admin mais peut être c'est votre post !!")
             let tokenData = decodeToken(req);
-            let userId = tokenData[0]; // Id d'utilisateur connecté
-            console.log("userId recupéré dans le module", userId);
+            let userId = tokenData[0];              // Id d'utilisateur connecté
             let postId = req.params.id;
-
             let selectAuthor = "SELECT authorId FROM post WHERE postId=?";
 
             mysql.query(selectAuthor, [postId], function (err, result) {
@@ -30,17 +26,13 @@ module.exports = (req, res, next) => {
                     return res.status(500).json(err.message);
                 }
         
-                let authorId = result[0].authorId;
-                console.log("my-post authorId", authorId);
-                console.log("my-post userId", userId);
-
+                let authorId = result[0].authorId;    // Si l'utilisateur connecté est l'autheur de la publication, l'action peut être faite
                 if(userId == authorId){
-                    console.log("C'est votre profil d'utilisateur !");
                     next();
                 }else{
-                    return res.status(401).json("Ce n'est pas votre profil d'utilisateur !!");
+                    return res.status(401).json();
                 }
             })
         }
     })
-};
+}

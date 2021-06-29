@@ -1,4 +1,6 @@
-const jwt = require('jsonwebtoken');                    // Importer le paquet de création de 'Token'
+// Middleware qui vérifie si l'utilisateur est connecté. Appliqué aux toutes les routes
+
+const jwt = require('jsonwebtoken');                                                // Importe le paquet de création de 'Token'
 
 module.exports = (req, res, next) => {
     try {

@@ -1,3 +1,5 @@
+// La gestion de publications
+
 require('dotenv').config();
 const mysql = require('../msqlConnect').connection;
 const fs = require("fs");
@@ -21,24 +23,22 @@ exports.createPost = (req, res, next) => {
             if (err) {
                 return res.status(500).json(err.message);
             }
-            res.status(201).json({ message: "L'article avec image est crée !" });
+            res.status(201).json({ message: "La publication avec image est ajouté !" });
         });
     } else {                        // Si le post ne contient pas d'image        
         let postImageUrl = "";
-        let data = [authorId, title, postImageUrl, content];
-        console.log("Data pour post", data);                                                   
+        let data = [authorId, title, postImageUrl, content];                                             
         mysql.query(newPost, data, function (err, result) {
             if (err) {
                 return res.status(500).json(err.message);
             }
-            res.status(201).json({ message: "L'article est crée !" });
-        });
+            res.status(201).json({ message: "La publication est ajouté !" });
+        })
     }
 };
 
 exports.deletePost = (req, res, next) => { 
     let postId = req.params.id;
-
     let selectImage = "SELECT postImageUrl FROM post WHERE postId=?";
     let deletePost = "DELETE FROM post WHERE postId=?";
     
@@ -49,12 +49,12 @@ exports.deletePost = (req, res, next) => {
         
         if (result[0].postImageUrl !== "") {                          // Si l'image existe
             const filename = result[0].postImageUrl.split("/images/")[1];
-            fs.unlink(`images/${filename}`, (err) => { // Supprime le fichier d'image
+            fs.unlink(`images/${filename}`, (err) => {              // Supprime le fichier d'image
                 mysql.query(deletePost, [postId], function (err, result) {
                     if (err) {
                         return res.status(500).json(err.message);
                     }
-                    res.status(200).json({ message: "L'article est supprimé !" });
+                    res.status(200).json({ message: "La publication a été supprimé !" });
                 })
             });
         } else {
@@ -62,7 +62,7 @@ exports.deletePost = (req, res, next) => {
                 if (err) {
                     return res.status(500).json(err.message);
                 }
-                res.status(200).json({ message: "L'article est supprimé !" });
+                res.status(200).json({ message: "La publication a été supprimé !" });
             })
         }
     })
@@ -95,9 +95,7 @@ exports.getOnePost = (req, res, next) => {
         }
     
         let authorId = result[0].authorId;
-        console.log("authorId", authorId);
         let data = [authorId, postId];
-        console.log("get data", data);
         mysql.query(getPost, data, function (err, result) {
             if (err) {
                 return res.status(500).json(err.message);
@@ -106,7 +104,7 @@ exports.getOnePost = (req, res, next) => {
                 return res.status(400).json({ message: "L'article n'existe pas !" });
             }
             res.status(200).json(result);
-        });
+        })
     })
 };
 
@@ -133,7 +131,7 @@ exports.getAllPosts = (req, res, next) => {
             return res.status(400).json(result);
         }
         res.status(200).json(result);
-    });
+    })
 };
 
 exports.oneUserPosts = (req, res, next) => {
@@ -160,5 +158,5 @@ exports.oneUserPosts = (req, res, next) => {
             res.status(400).json({ error: "Aucune publication trouvée !" });
         }
         res.status(200).json(posts);
-    });
-};
+    })
+}

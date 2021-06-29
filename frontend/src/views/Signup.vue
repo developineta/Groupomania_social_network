@@ -40,7 +40,7 @@
 
 <script>
 import axios from "axios";
-import { Validator } from 'simple-vue-validator';
+import { Validator } from 'simple-vue-validator';   // Validation de format de données du formulaire
 import User from '../components/User';
 
 export default {

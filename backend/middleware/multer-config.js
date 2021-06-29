@@ -1,4 +1,6 @@
-const multer = require('multer');   // Importer le paquet 'Multer' pour importer les fichiers
+// La gestion des images
+
+const multer = require('multer');   // Importe le paquet 'Multer' pour importer les fichiers
 
 const MIME_TYPES = {                // Définition de 'mime types' pour indiquer les fichiers acceptés
   'image/jpg': 'jpg',

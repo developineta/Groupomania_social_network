@@ -1,4 +1,6 @@
-import axios from 'axios';                              // Bibliothèque JavaScript en tant que client HTTP. Permet de communiquer avec API
+// Axios - bibliothèque JavaScript en tant que client HTTP. Permet de communiquer avec API
+
+import axios from 'axios';                              
 
 const token  = localStorage.getItem('userToken');
 

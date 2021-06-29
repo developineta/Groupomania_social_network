@@ -9,15 +9,19 @@
         <div class="required mb-2 text-center">Les champs requis *</div>
         
         <div class="post-inputs">
-          <textarea name="title" v-model="title" class="input form-control mb-4 pt-5 pb-0" placeholder="Le titre de votre publication *" title="Saisissez le titre de votre publication" required></textarea> <br>
+          <textarea name="title" v-model="title" class="input form-control mb-4 pt-5 pb-0" placeholder="Le titre de votre publication *" title="Saisissez le titre de votre publication" required></textarea>
         
-          <textarea name="content" v-model="content" class="input form-control mb-4 pt-5 pb-0" placeholder="Le contenu de votre publication *" title="Saisissez le contenu de votre publication" required></textarea> <br>
-        
-          <input class="image-post" type="file" name="image" ref="file" v-on:change="setImage"> <br>
+          <textarea name="content" v-model="content" class="input form-control mb-4 pt-5 pb-0" placeholder="Le contenu de votre publication *" title="Saisissez le contenu de votre publication" required></textarea>
 
-          <div id="preview">
-            <img class="img-preview mt-1" v-if="url" :src="url" />
+          <div class="col">
+            <input class="image-post row mt-2" type="file" name="image" ref="file" v-on:change="setImage">
+            <div class="font-italic text-p row py-2">Les fichiers acceptés: JPG, JPEG, PNG, GIF</div>
+
+            <div id="preview">
+              <img class="img-preview mt-1" v-if="url" :src="url" />
+            </div>
           </div>
+
         </div>
 
         <div class="btn-newpost mx-auto mt-6 mb-6">
@@ -69,7 +73,7 @@ export default {
       postService.createPost(postData)
       .then(res => {
         if (res) {
-          this.message = "La publication est ajouté !";
+          this.message = res.data.message;
           setTimeout( () => this.$router.go(), 2500);
         }
       })
@@ -94,7 +98,7 @@ export default {
 .container {
   border-top: 1px solid #FD2D01;
 }
-.h4, .required {
+.h4, .required, .text-p {
   color: #ffffff;
 }
 .jumbotron {

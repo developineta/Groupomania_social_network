@@ -1,6 +1,6 @@
-const passwordValidation = require('password-validator');        // Importer le paquet de validation de mot de passe
+const passwordValidation = require('password-validator');       // Importe le paquet de validation de mot de passe
 
-const passwordSchema = new passwordValidation();     // La schéma de mot de passe
+const passwordSchema = new passwordValidation();                // La schéma de mot de passe
 
 passwordSchema
 .is().min(8)                                                    // Longueur minimun : 8

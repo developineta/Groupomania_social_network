@@ -92,7 +92,7 @@ import authUser from "../services/auth";
 import authService from "../services/auth";
 import Header from "../components/Header.vue";
 import {mapState} from "vuex";
-import { Validator } from 'simple-vue-validator';
+import { Validator } from 'simple-vue-validator';             // Validation de format de données du formulaire
 import User from '../components/User';
 
 export default {
